@@ -1,0 +1,2128 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TYPO — Clickable UX Demo v0.1</title>
+<style>
+:root{
+  --nav:#071a2d;
+  --nav2:#0b2840;
+  --teal:#0f8c95;
+  --teal2:#12a4ad;
+  --blue:#2563eb;
+  --bg:#f4f7fb;
+  --panel:#fff;
+  --line:#e3e9f0;
+  --text:#132238;
+  --muted:#748094;
+  --green:#169c54;
+  --orange:#ee8b19;
+  --red:#d84949;
+  --purple:#7357e8;
+  --shadow:0 8px 28px rgba(19,34,56,.06);
+  --radius:14px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}
+.app{display:flex;min-height:100vh}
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:220px;
+  background:linear-gradient(180deg,var(--nav),#061423 82%);
+  color:#fff;padding:18px 12px;display:flex;flex-direction:column;z-index:20
+}
+.logo{font-weight:900;font-size:30px;letter-spacing:.5px;padding:0 14px 14px}
+.logo b{color:#35c7d6}.logo small{display:block;font-weight:600;font-size:11px;letter-spacing:1.6px;margin-top:2px;opacity:.82}
+.nav{display:flex;flex-direction:column;gap:5px}
+.nav button{
+  width:100%;border:0;background:transparent;color:#d9e3ee;text-align:left;
+  padding:11px 13px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:10px
+}
+.nav button:hover,.nav button.active{background:linear-gradient(90deg,#0c7f8a,#0b7280);color:#fff}
+.nav .sep{height:1px;background:rgba(255,255,255,.12);margin:10px 6px}
+.ai-card{margin-top:auto;border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:12px;background:rgba(255,255,255,.035)}
+.ai-card strong{font-size:13px}.ai-input{margin-top:10px;padding:10px;border-radius:9px;background:rgba(255,255,255,.06);font-size:12px;color:#b8c7d6}
+.userbox{margin-top:12px;padding:10px;border:1px solid rgba(255,255,255,.14);border-radius:12px;font-size:12px}
+.main{margin-left:220px;width:calc(100% - 220px)}
+.topbar{height:70px;border-bottom:1px solid var(--line);background:#fff;display:flex;align-items:center;padding:0 26px;gap:18px;position:sticky;top:0;z-index:10}
+.search{flex:1;max-width:540px;margin:auto}
+.search input{width:100%;border:1px solid var(--line);padding:11px 14px;border-radius:10px;background:#fbfcfe}
+.top-actions{display:flex;gap:10px}
+.iconbtn,.primary,.outline,.ghost{
+  border:0;border-radius:9px;padding:10px 14px;cursor:pointer
+}
+.iconbtn{background:#eef4f7}
+.addjob-btn{
+  width:46px;height:46px;padding:0;border-radius:14px;
+  background:linear-gradient(180deg,#16a9b4,#087681);
+  color:#fff;font-size:26px;font-weight:700;
+  box-shadow:0 8px 20px rgba(15,140,149,.30);
+  border:1px solid rgba(255,255,255,.25);
+  transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+.addjob-btn:hover{transform:translateY(-1px) scale(1.04);box-shadow:0 11px 26px rgba(15,140,149,.40);filter:saturate(1.12)}
+.addjob-btn:focus-visible{outline:3px solid rgba(37,99,235,.28);outline-offset:3px}
+.primary{background:linear-gradient(180deg,#0f9098,#0b7982);color:#fff}
+.outline{background:#fff;border:1px solid #bfd0dc;color:#126976}
+.ghost{background:#f5f7fa;color:#425169}
+.content{padding:24px}
+.page{display:none}.page.active{display:block}
+.headerline{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+.headerline h1{margin:0;font-size:26px}
+.sub{color:var(--muted);font-size:13px;margin-top:4px}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{
+  border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 16px;cursor:pointer;color:#2a3850
+}
+.pill.active{background:#0f8c95;color:#fff;border-color:#0f8c95}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.grid{display:grid;gap:14px}
+.dashboard-grid{grid-template-columns:1.45fr 1.2fr .9fr}
+.section{padding:16px}
+.section h3{font-size:14px;margin:0 0 14px;letter-spacing:.2px}
+.now-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.action-card{border:1px solid var(--line);border-radius:12px;padding:13px;min-height:135px;background:#fff}
+.dot{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;margin-bottom:13px;font-size:16px}
+.blue{background:#e6efff;color:#2463d8}.green{background:#e7f7ee;color:#189052}.orange{background:#fff0e2;color:#e57c12}.purple{background:#f0ecff;color:#7455e6}.cyan{background:#e3f7f8;color:#10848e}
+.action-card b{font-size:13px;display:block}.action-card small{display:block;color:var(--muted);margin-top:3px;line-height:1.4}
+.list{display:flex;flex-direction:column}
+.listrow{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #eef2f6}
+.listrow:last-child{border-bottom:0}
+.badge{display:inline-block;padding:5px 8px;border-radius:7px;font-size:11px;font-weight:700}
+.b-blue{background:#e5efff;color:#2462d7}.b-green{background:#e8f7ed;color:#158d4b}.b-orange{background:#fff0df;color:#df7c14}.b-red{background:#fdeaea;color:#ce4141}.b-purple{background:#eeebff;color:#684ce0}.b-gray{background:#eef1f5;color:#657083}
+.activity .listrow{grid-template-columns:28px 1fr auto}
+.ai-summary{background:linear-gradient(180deg,#faf8ff,#fff)}
+.ai-summary p{font-size:13px;line-height:1.6;color:#344257}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filters select,.filters input{border:1px solid var(--line);background:#fff;padding:9px 12px;border-radius:9px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;background:#fff}
+th,td{padding:13px 12px;border-bottom:1px solid #edf1f5;text-align:left;font-size:12px;white-space:nowrap}
+th{color:#68768a;font-size:11px;background:#fbfcfd}
+tr.clickable{cursor:pointer}
+tr.clickable:hover{background:#f4fbfc}
+tr.selected{background:#ecf8f9}
+.job-title{font-weight:800;color:#152438}.minor{color:#7d8798;font-size:11px;margin-top:3px}
+.drawer{
+  position:fixed;right:0;top:70px;bottom:0;width:370px;background:#fff;border-left:1px solid var(--line);
+  box-shadow:-10px 0 30px rgba(15,34,52,.08);z-index:15;padding:20px;overflow:auto;transform:translateX(105%);transition:.22s ease
+}
+.drawer.open{transform:translateX(0)}
+.drawer h2{margin:8px 0 4px;font-size:22px}.close{float:right;border:0;background:transparent;font-size:21px;cursor:pointer;color:#657083}
+.detail-group{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:7px 14px;font-size:12px;padding:4px 0}.kv span:first-child{color:#718095}
+.proof{height:150px;border-radius:10px;background:
+ radial-gradient(circle at 20% 38%,#dc2f2f 0 6%,transparent 6.5%),
+ radial-gradient(circle at 22% 65%,#e03c31 0 7%,transparent 7.4%),
+ linear-gradient(90deg,#163d21 0 36%,#111 36% 77%,#241315 77%);
+ position:relative;overflow:hidden;border:1px solid #202020}
+.proof:after{content:"MAMMA'S PIZZA\A SAUCE";white-space:pre;position:absolute;left:46%;top:34%;transform:translate(-10%,-10%);color:#fff;text-align:center;font-weight:900;font-size:16px;line-height:1.5}
+.tabs{display:flex;gap:28px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.tab{padding:12px 2px;cursor:pointer;color:#415168;border-bottom:2px solid transparent}
+.tab.active{color:#0d7f8a;border-bottom-color:#0d8994;font-weight:800}
+.job-tab{display:none}.job-tab.active{display:block}
+.summary-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border-radius:12px;overflow:hidden;border:1px solid var(--line);margin-bottom:14px}
+.summary-cell{background:#fff;padding:18px;text-align:center}
+.summary-cell strong{display:block;font-size:26px;margin-top:6px}
+.two-col{grid-template-columns:1fr 1fr}
+.three-col{grid-template-columns:1fr 1fr 1fr}
+.info-card{padding:16px}
+.info-card h3{margin:0 0 12px;font-size:13px}
+.specs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.spec{padding:10px;background:#f8fafc;border-radius:10px}
+.spec small{display:block;color:#7c8798}.spec b{font-size:13px}
+.production-layout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.imposition{height:220px;background:
+ linear-gradient(#fff,#fff) padding-box,
+ repeating-linear-gradient(90deg,#ddd 0 1px,transparent 1px 25%) border-box;
+ border:1px dashed #bbc7d1;border-radius:10px;padding:14px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:3px}
+.imp-item{background:linear-gradient(120deg,#162a1c,#171717 55%,#30191c);border:1px solid #888;position:relative}
+.imp-item:after{content:"SAUCE";position:absolute;color:#fff;font-weight:800;font-size:9px;left:50%;top:50%;transform:translate(-50%,-50%)}
+.accordion{padding:0}
+.acc-head{padding:14px 16px;font-weight:800;font-size:13px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+.cost-table td,.cost-table th{font-size:11px}
+.customer-top{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.customer-top>div{background:#fff;padding:18px}
+.customer-main{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin-top:14px}
+.customer-bottom{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.newjob-layout{display:grid;grid-template-columns:1.05fr 1.4fr .9fr;gap:14px}
+.incoming{padding:18px}.quote{font-size:19px;line-height:1.55;margin:28px 0}
+.ai-panel{padding:16px}.ai-step{padding:13px;border-bottom:1px solid var(--line)}.ai-step:last-child{border:0}
+.statusline{display:flex;align-items:center;justify-content:space-between}
+.quick-presets{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.quick-presets button{padding:15px;background:#fff;border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.toast{position:fixed;right:22px;bottom:22px;background:#102336;color:white;padding:12px 16px;border-radius:10px;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:.2s;z-index:40}
+.toast.show{opacity:1;transform:none}
+.link{color:#087f8d;cursor:pointer;font-weight:700}
+.note{padding:11px 13px;background:#f8fafc;border-left:3px solid #16a3ad;border-radius:8px;font-size:12px;color:#455267}
+@media(max-width:1150px){
+  .now-cards{grid-template-columns:repeat(3,1fr)}
+  .dashboard-grid,.newjob-layout,.production-layout,.customer-main,.customer-bottom{grid-template-columns:1fr}
+}
+
+.newjob-tab{display:none}
+.newjob-tab.active{display:block}
+
+
+.lifecycle-card{padding:16px;margin-bottom:14px}
+.lifecycle-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}
+.lifecycle-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+.lifecycle-steps:before{content:"";position:absolute;left:9%;right:9%;top:18px;height:2px;background:#dbe4eb;z-index:0}
+.life-step{position:relative;z-index:1;text-align:center}
+.life-dot{width:36px;height:36px;border-radius:50%;background:#eef2f6;color:#728093;display:grid;place-items:center;margin:0 auto 7px;border:3px solid #fff;box-shadow:0 0 0 1px #dbe4eb;font-weight:800}
+.life-step.done .life-dot{background:#e7f7ed;color:#16934d;box-shadow:0 0 0 1px #8bd0a8}
+.life-step.current .life-dot{background:#0f8c95;color:#fff;box-shadow:0 0 0 3px rgba(15,140,149,.18)}
+.life-step small{font-size:11px;color:#728093}
+.life-step.current small{color:#0c7d86;font-weight:800}
+.finance-strip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px}
+.finance-state{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:11px}
+.finance-state small{display:block;color:#7b8797;margin-bottom:5px}
+.modalback{position:fixed;inset:0;background:rgba(3,16,28,.46);display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
+.modalback.open{display:flex}
+.modal{width:min(620px,100%);background:#fff;border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.22);padding:20px}
+.modal h2{margin:0 0 6px}
+.option-card{border:1px solid var(--line);border-radius:11px;padding:13px;margin-top:10px;cursor:pointer}
+.option-card:hover{border-color:#8fc7cc;background:#f4fbfc}
+.option-card.selected{border-color:#0f8c95;background:#edf9fa;box-shadow:0 0 0 2px rgba(15,140,149,.08)}
+.option-card b{display:block;margin-bottom:3px}
+.amount-row{display:none;margin:10px 0 0}
+.amount-row.show{display:block}
+.amount-row input{width:180px;border:1px solid var(--line);border-radius:9px;padding:9px 10px}
+
+
+.quote-layout{display:grid;grid-template-columns:1.25fr .95fr;gap:14px}
+.quote-option{border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;margin-top:9px}
+.quote-option.selected{border-color:#0f8c95;background:#f1fbfb;box-shadow:0 0 0 2px rgba(15,140,149,.08)}
+.quote-option input{width:110px;padding:9px;border:1px solid var(--line);border-radius:9px}
+.quote-timeline{display:flex;flex-direction:column;gap:10px}
+.quote-event{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:start}
+.quote-event .event-icon{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#edf4f7}
+.quote-statusbar{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:14px 0}
+.quote-state{position:relative;text-align:center;padding-top:36px;color:#7a8798;font-size:11px}
+.quote-state:before{content:"";position:absolute;left:50%;top:11px;width:20px;height:20px;border-radius:50%;background:#e7edf2;transform:translateX(-50%);z-index:2;box-shadow:0 0 0 3px #fff}
+.quote-state:after{content:"";position:absolute;left:50%;right:-50%;top:20px;height:2px;background:#dce5eb;z-index:1}
+.quote-state:last-child:after{display:none}
+.quote-state.done{color:#14854a;font-weight:700}
+.quote-state.done:before{background:#1ba35b}
+.quote-state.current{color:#0e7d86;font-weight:800}
+.quote-state.current:before{background:#0f8c95;box-shadow:0 0 0 4px rgba(15,140,149,.12)}
+@media(max-width:1100px){.quote-layout{grid-template-columns:1fr}}
+
+
+/* v0.8 spacing fix — Customers & Quotes */
+#customers,
+#quotes{
+  padding: 4px 2px 28px;
+}
+
+#customers .headerline,
+#quotes .headerline{
+  margin-bottom: 20px;
+}
+
+#customers .customer-top{
+  margin-top: 4px;
+}
+
+#customers .customer-top > div{
+  padding: 20px 22px;
+}
+
+#customers .customer-main,
+#customers .customer-bottom{
+  gap: 16px;
+}
+
+#customers .info-card,
+#quotes .info-card{
+  padding: 20px 22px;
+}
+
+#customers .card.table-wrap,
+#quotes .card.table-wrap{
+  overflow: hidden;
+}
+
+#customers .card.table-wrap table,
+#quotes .card.table-wrap table{
+  width: 100%;
+}
+
+#customers table th,
+#customers table td,
+#quotes table th,
+#quotes table td{
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+#quotes #quotesList{
+  padding: 2px 0 24px;
+}
+
+#quotes #quoteEditor,
+#quotes #quoteDetail{
+  padding: 2px 0 28px;
+}
+
+#quotes .quote-layout{
+  gap: 16px;
+}
+
+#quotes .quote-option{
+  padding: 15px 16px;
+}
+
+#quotes .quote-statusbar{
+  margin: 16px 4px;
+}
+
+/* Keep inner content away from card edges on narrow layouts too */
+@media(max-width:900px){
+  #customers .info-card,
+  #quotes .info-card,
+  #customers .customer-top > div{
+    padding: 16px;
+  }
+}
+
+
+/* v0.9 — fix horizontal layout overflow on Customers / Quotes */
+.main{
+  min-width:0;
+  overflow-x:hidden;
+}
+
+.topbar{
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  padding-left:26px;
+  padding-right:26px;
+}
+
+.content{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  padding-left:24px;
+  padding-right:24px;
+  overflow-x:hidden;
+}
+
+.page{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+
+#customers,
+#quotes,
+#customers > *,
+#quotes > *{
+  min-width:0;
+  max-width:100%;
+}
+
+#customers .customer-top,
+#customers .customer-main,
+#customers .customer-bottom,
+#quotes .quote-layout,
+#quotes #quotesList,
+#quotes #quoteEditor,
+#quotes #quoteDetail{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+
+#customers .customer-main > *,
+#customers .customer-bottom > *,
+#quotes .quote-layout > *{
+  min-width:0;
+}
+
+#customers .table-wrap,
+#quotes .table-wrap{
+  width:100%;
+  max-width:100%;
+  overflow-x:auto;
+}
+
+/* The table scrolls inside its card instead of widening the whole page */
+#customers table,
+#quotes table{
+  min-width:760px;
+  width:100%;
+}
+
+
+.tasks-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.task-filterbar{display:flex;gap:8px;flex-wrap:wrap}
+.task-list{display:flex;flex-direction:column;gap:10px}
+.task-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:start}
+.task-card.snoozed{opacity:.72;background:#fafbfc}
+.task-card.completed{opacity:.66;background:#f7faf8}
+.task-card .check{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);display:grid;place-items:center;cursor:pointer;background:#fff}
+.task-card .check:hover{border-color:#0f8c95}
+.task-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.task-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.task-actions button{padding:7px 9px}
+.task-history{margin-top:18px}
+.snooze-menu{display:none;position:absolute;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:7px;z-index:30;min-width:180px}
+.snooze-menu.open{display:block}
+.snooze-menu button{display:block;width:100%;text-align:left;border:0;background:#fff;padding:8px 9px;border-radius:7px;cursor:pointer}
+.snooze-menu button:hover{background:#f3f7f8}
+.task-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.task-modal-grid input,.task-modal-grid select{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px}
+@media(max-width:900px){
+  .task-card{grid-template-columns:32px 1fr}
+  .task-actions{grid-column:2}
+  .task-modal-grid{grid-template-columns:1fr}
+}
+
+
+/* Tasks controls aligned with the global TYPO UI */
+.task-icon-btn{
+  width:34px;
+  height:34px;
+  padding:0;
+  border:0;
+  border-radius:9px;
+  background:#f5f7fa;
+  color:#425169;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  font-size:14px;
+}
+.task-icon-btn:hover{
+  background:#eef4f7;
+  color:#126976;
+}
+.task-icon-btn:focus-visible{
+  outline:2px solid rgba(15,140,149,.22);
+  outline-offset:2px;
+}
+
+.assignee-select{
+  border:0;
+  border-radius:7px;
+  padding:6px 8px;
+  min-height:34px;
+  background:#eef1f5;
+  color:#657083;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+}
+.assignee-select:hover{
+  background:#e8edf2;
+}
+.assignee-select:focus{
+  outline:2px solid rgba(15,140,149,.18);
+  outline-offset:1px;
+}
+
+
+.inbox-layout{display:grid;grid-template-columns:1.05fr 1.35fr;gap:14px}
+.inbox-list{display:flex;flex-direction:column;gap:8px}
+.inbox-item{border:1px solid var(--line);border-radius:11px;padding:12px;background:#fff;cursor:pointer}
+.inbox-item:hover{background:#f8fbfc}
+.inbox-item.active{border-color:#0f8c95;background:#eef9fa;box-shadow:0 0 0 2px rgba(15,140,149,.07)}
+.inbox-item .top{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.inbox-item .preview{font-size:12px;color:#68768a;margin-top:6px;line-height:1.45}
+.inbox-detail{padding:18px}
+.inbox-message{border:1px solid var(--line);background:#fbfcfe;border-radius:12px;padding:16px;margin-top:12px}
+.ai-intent{background:linear-gradient(180deg,#f8f6ff,#fff);border:1px solid #e8e2ff;border-radius:12px;padding:14px;margin-top:14px}
+.inbox-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.inbox-actions .primary-action{background:linear-gradient(180deg,#0f9098,#0b7982);color:#fff}
+.match-card{border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:8px;background:#fff}
+.match-card.selected{border-color:#0f8c95;background:#f1fbfb}
+.reply-box{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.reply-box textarea{width:100%;height:92px;border:1px solid var(--line);border-radius:10px;padding:12px;resize:vertical}
+@media(max-width:1050px){.inbox-layout{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo"><b>T</b>YPO<small>AI BUSINESS OS</small></div>
+    <nav class="nav">
+      <button data-page="dashboard" class="active">⌂ Dashboard</button>
+      <button data-page="jobs">▣ Jobs</button>
+      <button data-page="customers">♙ Customers</button>
+      <button data-page="quotes">▤ Quotes</button>
+      <button data-page="tasks">✓ Tasks <span style="margin-left:auto;background:#1976f3;padding:2px 7px;border-radius:12px">12</span></button>
+      <button data-page="inbox">✉ Inbox <span style="margin-left:auto;background:#1976f3;padding:2px 7px;border-radius:12px">5</span></button>
+      <button data-page="payments">▰ Payments</button>
+      <button data-page="invoices">▤ Invoices</button>
+      <div class="sep"></div>
+      <button data-page="suppliers">♧ Suppliers</button>
+      <button data-page="materials">⌘ Materials</button>
+      <button data-page="files">▧ Files (Local)</button>
+      <div class="sep"></div>
+      <button data-page="reports">▥ Reports</button>
+      <button data-page="settings">⚙ Settings</button>
+    </nav>
+    <div class="ai-card"><strong>✦ AI Assistant</strong><div class="ai-input">Ρώτησέ με κάτι...</div></div>
+    <div class="userbox"><b>Γιώργος</b><br><span style="opacity:.7">Administrator</span></div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div id="breadcrumb" style="font-weight:800">Dashboard</div>
+      <div class="search"><input placeholder="Αναζήτηση σε πελάτες, εργασίες, προσφορές..." /></div>
+      <div class="top-actions"><button class="iconbtn addjob-btn" onclick="go('newjob')" title="Νέα εργασία" aria-label="Νέα εργασία">＋</button><button class="iconbtn">🔔</button><button class="iconbtn">👤</button></div>
+    </div>
+
+    <div class="content">
+      <section id="dashboard" class="page active">
+        <div class="headerline">
+          <div><h1>Καλημέρα, Γιώργο! 👋</h1><div class="sub">Έχεις 2 νέα αιτήματα και 1 εργασία που χρειάζεται άμεση προσοχή.</div></div>
+        </div>
+        <div class="pills" id="dashFilters" style="margin-bottom:16px">
+          <button class="pill active" data-filter="all">Όλα</button>
+          <button class="pill" data-filter="print">Εκτυπώσεις</button>
+          <button class="pill" data-filter="design">Γραφιστικά</button>
+          <button class="pill" data-filter="web">Ιστοσελίδες</button>
+          <button class="pill" data-filter="other">Άλλα</button>
+        </div>
+
+        <div class="now-cards" id="nowCards">
+          <div class="action-card" data-cat="print"><div class="dot blue">💬</div><b>Απάντηση σε νέο αίτημα</b><small>Mamma's Pizza<br>Ετικέτες sauce cups</small></div>
+          <div class="action-card" data-cat="design"><div class="dot green">✓</div><b>Αποστολή νέου proof</b><small>Coffee Island<br>Κάρτες</small></div>
+          <div class="action-card" data-cat="print"><div class="dot orange">€</div><b>Έγκριση κόστους</b><small>Pharma Plus<br>Έντυπο</small></div>
+          <div class="action-card" data-cat="print"><div class="dot purple">□</div><b>Παραλαβή υλικού</b><small>A&G Paper<br>Αυτοκόλλητα</small></div>
+          <div class="action-card" data-cat="other"><div class="dot cyan">▰</div><b>Έλεγχος πληρωμής</b><small>TechMart<br>Τιμολόγιο 1562</small></div>
+        </div>
+
+        <div class="grid dashboard-grid" style="margin-top:14px">
+          <div class="card section">
+            <h3>ΝΕΑ ΑΙΤΗΜΑΤΑ <span class="badge b-red">2</span></h3>
+            <div class="list">
+              <div class="listrow" data-cat="print"><div>✉</div><div><b>info@mammaspizza.gr</b><div class="minor">Θέλω 1.000 ετικέτες ίδιες με την προηγούμενη φορά.</div></div><button class="outline" onclick="go('newjob')">Ενέργειες</button></div>
+              <div class="listrow" data-cat="print"><div>☏</div><div><b>Nikolas (Viber)</b><div class="minor">Θέλω προσφορά για 5.000 φυλλάδια A5 δίπτυχα.</div></div><button class="outline">Ενέργειες</button></div>
+            </div>
+          </div>
+          <div class="card section activity">
+            <h3>ΠΡΟΣΦΑΤΗ ΔΡΑΣΤΗΡΙΟΤΗΤΑ</h3>
+            <div class="list">
+              <div class="listrow"><div>✓</div><div>Ολοκληρώθηκε η εργασία Ετικέτες sauce cups.</div><small>35′</small></div>
+              <div class="listrow"><div>€</div><div>Καταχωρήθηκε πληρωμή TechMart 150,00 €</div><small>1ω</small></div>
+              <div class="listrow"><div>▤</div><div>Εκδόθηκε τιμολόγιο για Coffee Island</div><small>2ω</small></div>
+              <div class="listrow"><div>💬</div><div>Νέο μήνυμα από Nikolas (Viber)</div><small>3ω</small></div>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="card section ai-summary">
+              <h3>✦ AI SUMMARY</h3>
+              <p>Έχεις <b>2 νέα αιτήματα</b> που φαίνονται σημαντικά.</p>
+              <p>1 εργασία χρειάζεται την προσοχή σου.</p>
+              <p>3 εργασίες πιθανόν να προχωρήσουν σήμερα.</p>
+            </div>
+            <div class="card section">
+              <h3>📌 PINNED BY YOU</h3>
+              <div class="listrow"><div>•</div><div>Να καλέσω λογιστή για ΦΠΑ</div><div>★</div></div>
+              <div class="listrow"><div>•</div><div>Παράδοση banner στο κατάστημα</div><div>★</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="jobs" class="page">
+        <div class="headerline">
+          <div><h1>Jobs <span class="badge b-gray">78</span></h1></div>
+          <button class="primary" onclick="go('newjob')">＋ Νέα εργασία</button>
+        </div>
+        <div class="pills" id="jobFilters" style="margin-bottom:14px">
+          <button class="pill active" data-jobfilter="all">Όλα</button><button class="pill" data-jobfilter="Εκτυπώσεις">Εκτυπώσεις</button><button class="pill" data-jobfilter="Γραφιστικά">Γραφιστικά</button><button class="pill" data-jobfilter="Ιστοσελίδες">Ιστοσελίδες</button><button class="pill" data-jobfilter="Άλλα">Άλλα</button>
+        </div>
+        <div class="toolbar">
+          <div class="filters"><input id="jobsSearch" placeholder="Αναζήτηση jobs..."><select><option>Status</option></select><select><option>Customer</option></select><select><option>Κατηγορία</option></select><select><option>Πληρωμή</option></select><select><option>Τιμολόγιο</option></select></div>
+          <div><button class="outline">Λίστα</button> <button class="ghost">Κάρτες</button></div>
+        </div>
+        <div class="card table-wrap">
+          <table>
+            <thead><tr><th></th><th>Job #</th><th>Τίτλος εργασίας</th><th>Πελάτης</th><th>Ποσότητα</th><th>Κατηγορία</th><th>Status</th><th>Συμφ. τιμή</th><th>Πληρωμή</th><th>Τελ. ενημέρωση</th></tr></thead>
+            <tbody id="jobsBody">
+              <tr class="clickable" data-job="JOB-1842" data-title="Ετικέτες sauce cups" data-customer="Mamma's Pizza" data-qty="1000" data-category="Εκτυπώσεις" data-status="Σε παραγωγή" data-price="145.00" data-payment="Πληρωμένο" onclick="openDrawer(this)"><td>☆</td><td class="link">JOB-1842</td><td><div class="job-title">Ετικέτες sauce cups</div><div class="minor">Αυτοκόλλητες ετικέτες</div></td><td>Mamma's Pizza</td><td>1.000 τεμ.<div class="minor">10 × 6 cm</div></td><td>Εκτυπώσεις</td><td><span class="badge b-blue">Σε παραγωγή</span></td><td>145,00 €</td><td><span class="badge b-green">Πληρωμένο</span></td><td>πριν 1 ώρα</td></tr>
+              <tr class="clickable" data-job="JOB-1841" data-title="Flyers προσφοράς" data-customer="Coffee Island" data-qty="2000" data-category="Εκτυπώσεις" data-status="Περιμένει έγκριση" data-price="220.00" data-payment="Ανεξόφλητο" onclick="openDrawer(this)"><td>☆</td><td class="link">JOB-1841</td><td><div class="job-title">Flyers προσφοράς</div><div class="minor">Χαρτί Velvet 130gr</div></td><td>Coffee Island</td><td>2.000 τεμ.</td><td>Εκτυπώσεις</td><td><span class="badge b-orange">Περιμένει έγκριση</span></td><td>220,00 €</td><td><span class="badge b-red">Ανεξόφλητο</span></td><td>πριν 2 ώρες</td></tr>
+              <tr class="clickable" data-job="JOB-1840" data-title="Σχεδιασμός λογοτύπου" data-customer="GreenLab" data-qty="" data-category="Γραφιστικά" data-status="Σε εξέλιξη" data-price="350.00" data-payment="Προκαταβολή" onclick="openDrawer(this)"><td>☆</td><td class="link">JOB-1840</td><td><div class="job-title">Σχεδιασμός λογοτύπου</div><div class="minor">Νέα εταιρική ταυτότητα</div></td><td>GreenLab</td><td>—</td><td>Γραφιστικά</td><td><span class="badge b-purple">Σε εξέλιξη</span></td><td>350,00 €</td><td><span class="badge b-orange">Προκαταβολή</span></td><td>πριν 3 ώρες</td></tr>
+              <tr class="clickable" data-job="JOB-1839" data-title="Επαγγελματικές κάρτες" data-customer="Pharma Plus" data-qty="1000" data-category="Εκτυπώσεις" data-status="Έτοιμο" data-price="120.00" data-payment="Πληρωμένο" onclick="openDrawer(this)"><td>☆</td><td class="link">JOB-1839</td><td><div class="job-title">Επαγγελματικές κάρτες</div><div class="minor">Velvet 350gr, πλαστικοποίηση</div></td><td>Pharma Plus</td><td>1.000 τεμ.</td><td>Εκτυπώσεις</td><td><span class="badge b-green">Έτοιμο</span></td><td>120,00 €</td><td><span class="badge b-green">Πληρωμένο</span></td><td>πριν 5 ώρες</td></tr>
+              <tr class="clickable" data-job="JOB-1838" data-title="Ιστοσελίδα εταιρείας" data-customer="TechMart" data-qty="" data-category="Ιστοσελίδες" data-status="Σε εξέλιξη" data-price="850.00" data-payment="Προκαταβολή" onclick="openDrawer(this)"><td>☆</td><td class="link">JOB-1838</td><td><div class="job-title">Ιστοσελίδα εταιρείας</div><div class="minor">WordPress site</div></td><td>TechMart</td><td>—</td><td>Ιστοσελίδες</td><td><span class="badge b-purple">Σε εξέλιξη</span></td><td>850,00 €</td><td><span class="badge b-orange">Προκαταβολή</span></td><td>χθες</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="fulljob" class="page">
+        <div class="headerline">
+          <div><div class="link" onclick="go('jobs')">← Επιστροφή στα jobs</div><h1 style="margin-top:12px"><span class="link">JOB-1842</span> &nbsp; Ετικέτες sauce cups</h1><div class="sub"><span class="badge b-blue">Σε παραγωγή</span> &nbsp; <span class="badge b-green">Πληρωμένο</span> &nbsp; τελευταία ενημέρωση: πριν 1 ώρα</div></div>
+          <div><button class="outline">✎ Επεξεργασία</button> <button class="primary">Περισσότερα</button></div>
+        </div>
+        <div class="tabs">
+          <div class="tab active" data-jobtab="overview">Overview</div>
+          <div class="tab" data-jobtab="production">Production</div>
+          <div class="tab" data-jobtab="costing">Costing</div>
+          <div class="tab" data-jobtab="files">Files & Proof</div>
+          <div class="tab" data-jobtab="communication">Communication</div>
+          <div class="tab" data-jobtab="history">History</div>
+        </div>
+
+        <div id="overview" class="job-tab active">
+          <div class="card lifecycle-card">
+            <div class="lifecycle-head">
+              <div>
+                <h3 style="margin:0">ΡΟΗ ΕΡΓΑΣΙΑΣ</h3>
+                <div class="minor">Η παραγωγική κατάσταση είναι ξεχωριστή από πληρωμή και τιμολόγηση.</div>
+              </div>
+              <div id="lifeActionButtons" style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="outline" id="btnStartProduction" onclick="advanceLifecycle('production')">Έναρξη παραγωγής</button>
+                <button class="primary" id="btnCompleteProduction" onclick="advanceLifecycle('ready')">Ολοκλήρωση παραγωγής</button>
+                <button class="primary" id="btnDeliverJob" onclick="openDeliveryFlow()">Παράδοση / Παραλαβή</button>
+              </div>
+            </div>
+
+            <div class="lifecycle-steps">
+              <div class="life-step done" id="life-new"><div class="life-dot">✓</div><small>Νέα</small></div>
+              <div class="life-step current" id="life-production"><div class="life-dot">2</div><small>Σε παραγωγή</small></div>
+              <div class="life-step" id="life-ready"><div class="life-dot">3</div><small>Έτοιμη για παραλαβή</small></div>
+              <div class="life-step" id="life-delivered"><div class="life-dot">4</div><small>Παραδόθηκε</small></div>
+            </div>
+
+            <div class="finance-strip">
+              <div class="finance-state"><small>Payment status</small><b id="lifePayment"><span class="badge b-green">Πληρωμένο</span></b></div>
+              <div class="finance-state"><small>Invoice status</small><b id="lifeInvoice"><span class="badge b-gray">Χωρίς status</span></b></div>
+              <div class="finance-state"><small>Customer ledger</small><b id="lifeLedger">Χρέωση 145,00 €</b></div>
+            </div>
+          </div>
+
+          <div class="summary-row">
+            <div class="summary-cell"><small>Ημερομηνία δημιουργίας</small><strong>14 Μαΐ</strong><span class="minor">2024 · 10:24</span></div>
+            <div class="summary-cell"><small>Κατηγορία</small><strong style="font-size:18px">Εκτυπώσεις</strong><span class="minor">Ετικέτες</span></div>
+            <div class="summary-cell"><small>Υπεύθυνος</small><strong style="font-size:18px">Γιώργος</strong><span class="minor">Assigned</span></div>
+            <div class="summary-cell"><small>Προθεσμία</small><strong style="font-size:18px">16 Μαΐ</strong><span class="minor">σε 2 μέρες</span></div>
+          </div>
+          <div class="grid three-col">
+            <div class="card info-card"><h3>ΠΕΡΙΓΡΑΦΗ ΕΡΓΑΣΙΑΣ</h3><p>Εκτύπωση αυτοκόλλητων ετικετών για τα sauce cups της Mamma's Pizza.</p><p class="minor">Με κοπή περιγράμματος και ματ πλαστικοποίηση.</p></div>
+            <div class="card info-card"><h3>ΠΕΛΑΤΗΣ</h3><h3 class="link" onclick="go('customers')">Mamma's Pizza</h3><p>Κώστας Δημητριάδης</p><p class="minor">+30 694 123 4567 · info@mammaspizza.gr</p></div>
+            <div class="card info-card"><h3>APPROVED PROOF</h3><div class="proof"></div></div>
+          </div>
+          <div class="card info-card" style="margin-top:14px"><h3>ΒΑΣΙΚΕΣ ΠΡΟΔΙΑΓΡΑΦΕΣ</h3>
+            <div class="specs">
+              <div class="spec"><small>Ποσότητα</small><b>1.000 τεμ.</b></div><div class="spec"><small>Διάσταση</small><b>10 × 6 cm</b></div><div class="spec"><small>Υλικό</small><b>Αυτοκόλλητο PP White</b></div>
+              <div class="spec"><small>Εκτύπωση</small><b>4χρωμία (CMYK)</b></div><div class="spec"><small>Μηχανή</small><b>PrimeLink C9265</b></div><div class="spec"><small>Φινίρισμα</small><b>Κοπή + ματ πλαστικοποίηση</b></div>
+            </div>
+          </div>
+          <div class="grid two-col" style="margin-top:14px">
+            <div class="card info-card"><h3>CHECKLIST ΕΡΓΑΣΙΑΣ</h3><div class="list"><div class="listrow"><div>☑</div><div>Λήψη αρχείων</div><span class="badge b-green">Ολοκληρώθηκε</span></div><div class="listrow"><div>☑</div><div>Έγκριση πελάτη</div><span class="badge b-green">Ολοκληρώθηκε</span></div><div class="listrow"><div>☐</div><div>Εκτύπωση</div><span class="badge b-blue">Σε εξέλιξη</span></div></div></div>
+            <div class="card info-card"><h3>ΧΡΟΝΟΔΙΑΓΡΑΜΜΑ</h3><div class="list"><div class="listrow"><div>✓</div><div>Δημιουργήθηκε η εργασία</div><small>14/05</small></div><div class="listrow"><div>✓</div><div>Proof στάλθηκε στον πελάτη</div><small>14/05</small></div><div class="listrow"><div>○</div><div>Εκτύπωση</div><span class="badge b-blue">Σε εξέλιξη</span></div></div></div>
+          </div>
+        </div>
+
+        <div id="production" class="job-tab">
+          <div class="production-layout">
+            <div class="card info-card"><h3>1. ΠΡΟΔΙΑΓΡΑΦΕΣ ΕΡΓΑΣΙΑΣ</h3><div class="specs" style="grid-template-columns:1fr 1fr"><div class="spec"><small>Ποσότητα</small><b>1.000 τεμ.</b></div><div class="spec"><small>Διάσταση</small><b>10 × 6 cm</b></div><div class="spec"><small>Υλικό</small><b>PP White</b></div><div class="spec"><small>Μηχανή</small><b>PrimeLink C9265</b></div><div class="spec"><small>Εκτύπωση</small><b>CMYK</b></div><div class="spec"><small>Φινίρισμα</small><b>Contour + matt lamination</b></div></div></div>
+            <div class="card info-card"><h3>2. IMPOSITION</h3><div class="imposition"><div class="imp-item"></div><div class="imp-item"></div><div class="imp-item"></div><div class="imp-item"></div><div class="imp-item"></div><div class="imp-item"></div><div class="imp-item"></div><div class="imp-item"></div></div><div class="minor" style="margin-top:10px">SRA3 · 8-up · τελικό 10 × 6 cm</div></div>
+            <div class="card info-card"><h3>3. PROOF (τελευταίο εγκεκριμένο)</h3><div class="proof" style="height:220px"></div><div class="listrow"><div>▤</div><div><b>Sauce_cups_final.pdf</b><div class="minor">PDF · Έκδοση 3</div></div><button class="ghost">↓</button></div></div>
+          </div>
+          <div class="grid two-col" style="margin-top:14px">
+            <div class="card info-card"><h3>4. ΦΙΝΙΡΙΣΜΑ / ΜΕΤΑΠΟΙΗΣΗ</h3><table><tr><th>Βήμα</th><th>Περιγραφή</th><th>Μηχάνημα</th><th>Κατάσταση</th></tr><tr><td>1</td><td>Εκτύπωση</td><td>PrimeLink C9265</td><td><span class="badge b-green">Ολοκληρώθηκε</span></td></tr><tr><td>2</td><td>Κοπή περιγράμματος</td><td>Graphtec FC9000</td><td><span class="badge b-blue">Σε εξέλιξη</span></td></tr><tr><td>3</td><td>Ματ πλαστικοποίηση</td><td>Ρολό πλαστικοποιητής</td><td><span class="badge b-gray">Εκκρεμεί</span></td></tr></table></div>
+            <div class="card info-card"><h3>5. PRODUCTION STATUS</h3><div style="display:flex;justify-content:space-between;text-align:center;padding:24px 0"><div>✅<div class="minor">Παραλαβή αρχείων</div></div><div>✅<div class="minor">Έλεγχος</div></div><div>🖨️<div class="minor">Εκτύπωση</div></div><div>✂️<div class="minor">Φινίρισμα</div></div><div>📦<div class="minor">Παράδοση</div></div></div><div class="note">Εκτύπωση σε εξέλιξη. Αναμένεται ολοκλήρωση έως το μεσημέρι.</div></div>
+          </div>
+        </div>
+
+        <div id="costing" class="job-tab">
+          <div class="summary-row">
+            <div class="summary-cell"><small>Current Cost</small><strong>95,00 €</strong></div>
+            <div class="summary-cell"><small>Συμφωνημένη Τιμή</small><strong>145,00 €</strong></div>
+            <div class="summary-cell"><small>Κέρδος</small><strong style="color:#15904b">50,00 €</strong></div>
+            <div class="summary-cell"><small>Margin %</small><strong>34,5%</strong></div>
+          </div>
+          <div class="card accordion"><div class="acc-head">1. ΥΛΙΚΑ <span>⌃</span></div><table class="cost-table"><tr><th>Υλικό</th><th>Ποσότητα</th><th>Κόστος μονάδας</th><th>Σύνολο</th></tr><tr><td>Αυτοκόλλητο PP White</td><td>1.000 φύλλα</td><td>0,070 €</td><td>70,00 €</td></tr><tr><td>Μεταφορικά υλικών</td><td>1</td><td>5,00 €</td><td>5,00 €</td></tr></table></div>
+          <div class="card accordion" style="margin-top:10px"><div class="acc-head">2. ΕΚΤΥΠΩΣΗ <span>⌃</span></div><table class="cost-table"><tr><th>Μηχάνημα</th><th>Passes</th><th>Κόστος</th><th>Σύνολο</th></tr><tr><td>PrimeLink C9265</td><td>4</td><td>0,020 €</td><td>20,00 €</td></tr></table></div>
+          <div class="card accordion" style="margin-top:10px"><div class="acc-head">3. ΦΙΝΙΡΙΣΜΑ <span>⌃</span></div><table class="cost-table"><tr><th>Εργασία</th><th>Ποσότητα</th><th>Κόστος μονάδας</th><th>Σύνολο</th></tr><tr><td>Κοπή περιγράμματος</td><td>1.000</td><td>0,030 €</td><td>30,00 €</td></tr><tr><td>Ματ πλαστικοποίηση</td><td>1.000</td><td>0,015 €</td><td>15,00 €</td></tr></table></div>
+          <div class="card accordion" style="margin-top:10px"><div class="acc-head">4. EXTRA COSTS <span>⌃</span></div><table class="cost-table"><tr><th>Περιγραφή</th><th>Ποσότητα</th><th>Κόστος</th></tr><tr><td>Συσκευασία / βοηθητικά</td><td>1</td><td>5,00 €</td></tr></table></div>
+        </div>
+
+        
+        <div id="files" class="job-tab">
+          <div class="grid two-col">
+            <div class="card info-card">
+              <div class="statusline">
+                <h3>APPROVED PROOF</h3>
+                <span id="proofBadge" class="badge b-green">Εγκεκριμένο</span>
+              </div>
+              <div class="proof" style="height:260px;margin-top:10px"></div>
+              <div class="listrow">
+                <div>▤</div>
+                <div><b>Sauce_cups_final.pdf</b><div class="minor">PDF · Έκδοση 3</div></div>
+                <button class="outline">Άνοιγμα</button>
+              </div>
+              <div class="note" id="proofMeta">Εγκρίθηκε μέσω Viber · 14/05/2024 · 15:42</div>
+            </div>
+
+            <div class="card info-card">
+              <h3>PRODUCTION FILES</h3>
+              <div class="listrow">
+                <div>▧</div>
+                <div><b>Sauce_cups_PRINT_v3.pdf</b><div class="minor">Production file</div></div>
+                <button class="outline">Άνοιγμα</button>
+              </div>
+              <div class="listrow">
+                <div>▧</div>
+                <div><b>Production folder</b><div class="minor">ΠΕΛΑΤΕΣ / MAMMA'S PIZZA / JOB-1842</div></div>
+                <button class="outline">Άνοιγμα φακέλου</button>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:12px">
+                <button class="outline" onclick="toast('Demo: επιλογή νέου αρχείου')">＋ Προσθήκη αρχείου</button>
+                <button class="ghost" onclick="toast('Demo: local agent action')">⌂ Local Agent</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="communication" class="job-tab">
+          <div class="grid two-col">
+            <div class="card info-card">
+              <div class="statusline">
+                <div>
+                  <h3 style="margin-bottom:4px">AI SUMMARY</h3>
+                  <div class="minor">Unified thread · Viber + Email</div>
+                </div>
+                <span class="badge b-purple">Live summary</span>
+              </div>
+              <p id="commSummary" style="line-height:1.6;margin-top:14px">
+                Ο πελάτης ζήτησε τις ίδιες ετικέτες με την προηγούμενη φορά. 
+                Το proof στάλθηκε και εγκρίθηκε χωρίς αλλαγές.
+              </p>
+              <div class="note">
+                <b>Next action:</b>
+                <span id="nextActionText">Συνέχιση παραγωγής.</span>
+              </div>
+            </div>
+
+            <div class="card info-card">
+              <h3>QUICK ACTIONS</h3>
+              <div style="display:grid;gap:8px">
+                <button class="outline" onclick="sendProofDemo()">Αποστολή proof στον πελάτη</button>
+                <button class="outline" onclick="approveProofDemo()">Καταχώρηση έγκρισης proof</button>
+                <button class="outline" onclick="toast('Demo: σύνδεση με άλλο job')">Σύνδεση μηνύματος με job</button>
+                <button class="outline" onclick="toast('Demo: δημιουργία internal task')">Δημιουργία task από next action</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card info-card" style="margin-top:14px">
+            <h3>COMMUNICATION TIMELINE</h3>
+            <div id="commTimeline">
+              <div class="listrow">
+                <div><span class="badge b-purple">Viber</span></div>
+                <div>
+                  <b>Mamma's Pizza</b>
+                  <div style="margin-top:4px">«Θέλω 1.000 ίδιες με την προηγούμενη φορά.»</div>
+                </div>
+                <small>14/05 · 10:02</small>
+              </div>
+              <div class="listrow">
+                <div><span class="badge b-blue">Email</span></div>
+                <div>
+                  <b>Typographic</b>
+                  <div style="margin-top:4px">Στάλθηκε proof: Sauce_cups_final.pdf</div>
+                </div>
+                <small>14/05 · 14:20</small>
+              </div>
+              <div class="listrow">
+                <div><span class="badge b-purple">Viber</span></div>
+                <div>
+                  <b>Mamma's Pizza</b>
+                  <div style="margin-top:4px">«Οκ, προχωρήστε.»</div>
+                </div>
+                <small>14/05 · 15:42</small>
+              </div>
+            </div>
+
+            <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px">
+              <div class="statusline">
+                <h3 style="margin:0">AI DRAFT REPLY</h3>
+                <span class="badge b-gray">Viber style</span>
+              </div>
+              <textarea id="replyDraft" style="width:100%;height:90px;border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:10px">Τέλεια, ευχαριστώ! Προχωράμε στην παραγωγή.</textarea>
+              <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px">
+                <button class="ghost" onclick="toast('Demo: draft regenerated')">↻ Νέο draft</button>
+                <button class="primary" onclick="sendReplyDemo()">Αποστολή</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="history" class="job-tab">
+          <div class="card info-card">
+            <h3>HISTORY</h3>
+            <div class="listrow"><div>＋</div><div><b>Δημιουργήθηκε η εργασία</b><div class="minor">Από repeat job JOB-1734</div></div><small>14/05 10:10</small></div>
+            <div class="listrow"><div>▤</div><div><b>Proof στάλθηκε</b><div class="minor">Sauce_cups_final.pdf</div></div><small>14/05 14:20</small></div>
+            <div class="listrow"><div>✓</div><div><b>Proof εγκρίθηκε</b><div class="minor">Μέσω Viber</div></div><small>14/05 15:42</small></div>
+            <div class="listrow"><div>🖨</div><div><b>Παραγωγή ξεκίνησε</b></div><small>16/05 09:00</small></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="customers" class="page">
+        <div class="headerline"><div><div class="link">← Επιστροφή στους πελάτες</div><h1 style="margin-top:10px">Mamma's Pizza</h1><div class="sub"><span class="badge b-green">Ενεργός πελάτης</span></div></div><button class="primary" onclick="go('newjob')">＋ Νέα εργασία</button></div>
+        <div class="customer-top">
+          <div><small>Ενεργές δουλειές</small><h2>3</h2><span class="link">Προβολή</span></div>
+          <div><small>Περιμένει έγκριση</small><h2>1</h2><span class="link">Προβολή</span></div>
+          <div><small>Υπόλοιπο πελάτη</small><h2>320,00 €</h2><span class="link" onclick="showLedger()">Προβολή</span></div>
+          <div><small>Τελευταίο σημαντικό μήνυμα</small><h2>χθες</h2><span class="link">Προβολή</span></div>
+        </div>
+        <div class="customer-main">
+          <div class="card info-card"><h3>ΕΝΕΡΓΕΣ ΕΡΓΑΣΙΕΣ</h3><table><tr><th>Job</th><th>Τίτλος</th><th>Status</th><th>Τιμή</th><th>Πληρωμή</th></tr><tr class="clickable" onclick="go('fulljob')"><td class="link">JOB-1842</td><td>Ετικέτες sauce cups</td><td><span class="badge b-blue">Σε παραγωγή</span></td><td>145 €</td><td><span class="badge b-green">Πληρωμένο</span></td></tr><tr><td>JOB-1831</td><td>Flyers προσφοράς</td><td><span class="badge b-orange">Αναμονή έγκρισης</span></td><td>85 €</td><td>Μερική</td></tr><tr><td>JOB-1778</td><td>Κάρτες delivery</td><td><span class="badge b-purple">Σχεδιασμός</span></td><td>90 €</td><td>Εκκρεμεί</td></tr></table></div>
+          <div class="grid">
+            <div class="card info-card"><h3>ΣΤΟΙΧΕΙΑ ΕΠΙΚΟΙΝΩΝΙΑΣ</h3><div class="kv"><span>Τηλέφωνο</span><b>+30 694 123 4567</b><span>Viber</span><b>+30 694 123 4567</b><span>Email</span><b class="link">info@mammaspizza.gr</b><span>ΑΦΜ</span><b>123456789</b></div></div>
+            <div class="card info-card"><h3>ΥΠΟΛΟΙΠΟ ΠΕΛΑΤΗ</h3><h2>320,00 €</h2><span class="link" onclick="showLedger()">Προβολή αναλυτικού υπολοίπου →</span></div>
+          </div>
+        </div>
+        <div class="customer-bottom">
+          <div class="card info-card"><h3>ΣΗΜΑΝΤΙΚΕΣ ΠΛΗΡΟΦΟΡΙΕΣ</h3><p>📌 Προτιμά επικοινωνία μέσω Viber.</p><p>📌 Για ετικέτες χρησιμοποιεί πάντα freezer adhesive.</p><p>📌 Συχνά ζητά επανάληψη ίδιων specs.</p></div>
+          <div class="card info-card"><h3>RECENT ACTIVITY</h3><div class="listrow"><div>▣</div><div>Δημιουργήθηκε νέα εργασία</div><small>Σήμερα</small></div><div class="listrow"><div>€</div><div>Καταχώρηση πληρωμής</div><small>Χθες</small></div><div class="listrow"><div>✓</div><div>Έγκριση proof</div><small>Χθες</small></div></div>
+        </div>
+        <div class="card info-card" style="margin-top:14px"><h3>ΙΣΤΟΡΙΚΟ ΕΡΓΑΣΙΩΝ</h3><div class="tabs" style="margin-bottom:8px"><div class="tab active">Ενεργές (3)</div><div class="tab">Ολοκληρωμένες (18)</div><div class="tab">Παραδομένες (16)</div><div class="tab">Ακυρωμένες (2)</div></div><table><tr><th>ID</th><th>Τίτλος</th><th>Κατάσταση</th><th>Συμφωνημένη τιμή</th><th>Πληρωμή</th></tr><tr><td class="link">JOB-1842</td><td>Ετικέτες sauce cups</td><td><span class="badge b-blue">Σε παραγωγή</span></td><td>145 €</td><td>Πληρωμένο</td></tr><tr><td>JOB-1831</td><td>Flyers προσφοράς</td><td><span class="badge b-orange">Αναμονή έγκρισης</span></td><td>85 €</td><td>Μερική</td></tr></table></div>
+      </section>
+
+      <section id="ledger" class="page">
+        <div class="headerline"><div><div class="link" onclick="go('customers')">← Επιστροφή στον πελάτη</div><h1 style="margin-top:10px">Mamma's Pizza — Ledger</h1></div><button class="primary" onclick="toast('Νέα πληρωμή — demo action')">Νέα πληρωμή</button></div>
+        <div class="summary-row">
+          <div class="summary-cell"><small>Τρέχον υπόλοιπο</small><strong>1.145,00 €</strong><span class="minor" style="color:#e17816">Ληξιπρόθεσμο</span></div>
+          <div class="summary-cell"><small>Σύνολο χρεώσεων</small><strong>3.395,00 €</strong></div>
+          <div class="summary-cell"><small>Σύνολο πληρωμών</small><strong style="color:#15904b">2.250,00 €</strong></div>
+          <div class="summary-cell"><small>Τελευταία πληρωμή</small><strong>800,00 €</strong><span class="minor">10/05/2024</span></div>
+        </div>
+        <div class="card table-wrap"><table><tr><th>Ημερομηνία</th><th>Τύπος</th><th>Περιγραφή</th><th>Αναφορά</th><th>Χρέωση</th><th>Πίστωση</th><th>Υπόλοιπο</th></tr><tr><td>16/05/2024</td><td>Χρέωση</td><td>Ετικέτες sauce cups</td><td>JOB-1842</td><td>145,00 €</td><td>—</td><td>1.145,00 €</td></tr><tr><td>10/05/2024</td><td><span class="badge b-green">Πληρωμή</span></td><td>Τραπεζική μεταφορά</td><td>PAY-0068</td><td>—</td><td style="color:#15904b">800,00 €</td><td>1.000,00 €</td></tr><tr><td>02/05/2024</td><td>Χρέωση</td><td>Flyers προσφοράς</td><td>JOB-1831</td><td>280,00 €</td><td>—</td><td>1.800,00 €</td></tr><tr><td>25/04/2024</td><td><span class="badge b-green">Πληρωμή</span></td><td>Πληρωμή μετρητά</td><td>PAY-0067</td><td>—</td><td style="color:#15904b">400,00 €</td><td>1.520,00 €</td></tr><tr><td>01/01/2024</td><td>Άνοιγμα</td><td>Αρχικό υπόλοιπο</td><td>OPENING</td><td>—</td><td>—</td><td>1.700,00 €</td></tr></table></div>
+      </section>
+
+      
+      <section id="newjob" class="page">
+        <div class="headerline">
+          <div>
+            <div class="link" onclick="go('jobs')">← Επιστροφή</div>
+            <h1 style="margin-top:10px">Νέα εργασία</h1>
+            <div class="sub">Ξεκίνα από το μηδέν — χωρίς να απαιτείται μήνυμα ή εισερχόμενο αίτημα.</div>
+          </div>
+        </div>
+
+        <div class="tabs" id="newJobTabs" style="max-width:650px">
+          <div class="tab active" data-newjobtab="nj-ai">✦ AI περιγραφή</div>
+          <div class="tab" data-newjobtab="nj-preset">Preset</div>
+          <div class="tab" data-newjobtab="nj-manual">Χειροκίνητα</div>
+        </div>
+
+        <div id="nj-ai" class="newjob-tab active">
+          <div class="grid two-col">
+            <div class="card info-card">
+              <h3>1. ΠΕΡΙΓΡΑΨΕ ΤΗ ΔΟΥΛΕΙΑ</h3>
+              <div class="sub" style="margin-bottom:12px">Γράψε όπως θα το έλεγες σε έναν συνεργάτη. Δεν χρειάζεται να συμπληρώσεις φόρμα.</div>
+              <textarea id="scratchPrompt" style="width:100%;height:180px;border:1px solid var(--line);border-radius:12px;padding:14px;resize:vertical" placeholder="π.χ. 1.000 επαγγελματικές κάρτες για Mamma's Pizza, ίδιες με τις προηγούμενες, 8,5 × 5,5, Velvet 350gr"></textarea>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:8px">
+                <button class="ghost" onclick="fillScratchExample()">🎙 Φωνή / παράδειγμα</button>
+                <button class="primary" onclick="analyseScratch()">✦ Ανάλυση με AI</button>
+              </div>
+              <div class="note" style="margin-top:14px">Το AI δεν δημιουργεί τη δουλειά απευθείας. Πρώτα αναλύει, ρωτά αν λείπει κάτι σημαντικό και μετά δείχνει review.</div>
+            </div>
+
+            <div class="card info-card" id="scratchState">
+              <h3>2. AI REVIEW</h3>
+              <div id="scratchEmpty" style="padding:34px 10px;text-align:center;color:var(--muted)">
+                <div style="font-size:34px;margin-bottom:10px">✦</div>
+                <b>Δεν έχει γίνει ακόμη ανάλυση</b>
+                <div class="minor" style="margin-top:6px">Γράψε την εργασία αριστερά και πάτησε «Ανάλυση με AI».</div>
+              </div>
+
+              <div id="scratchQuestion" style="display:none">
+                <div class="note" style="border-color:#e89b2a;background:#fff8eb">
+                  <b>Χρειάζομαι μία διευκρίνιση</b>
+                  <div style="margin-top:6px">Ποιον πελάτη αφορά αυτή η εργασία;</div>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:12px">
+                  <button class="outline" onclick="answerScratchCustomer('Mamma\\'s Pizza')">Mamma's Pizza</button>
+                  <button class="outline" onclick="answerScratchCustomer('Νέος πελάτης')">Νέος πελάτης</button>
+                </div>
+              </div>
+
+              <div id="scratchReview" style="display:none">
+                <div class="statusline"><h3 style="margin:0">Πρόταση εργασίας</h3><span class="badge b-green">Έτοιμο για review</span></div>
+                <div class="ai-step"><small>Πελάτης</small><h3 id="rvCustomer" style="margin:5px 0">Mamma's Pizza</h3></div>
+                <div class="ai-step"><small>Κατηγορία</small><h3 id="rvCategory" style="margin:5px 0">Εκτυπώσεις</h3></div>
+                <div class="ai-step">
+                  <small>Εξαγόμενα στοιχεία</small>
+                  <div class="specs" style="grid-template-columns:1fr 1fr;margin-top:10px">
+                    <div class="spec"><small>Περιγραφή</small><b id="rvDesc">Επαγγελματικές κάρτες</b></div>
+                    <div class="spec"><small>Ποσότητα</small><b id="rvQty">1.000 τεμ.</b></div>
+                    <div class="spec"><small>Διάσταση</small><b id="rvSize">8,5 × 5,5 cm</b></div>
+                    <div class="spec"><small>Υλικό</small><b id="rvMaterial">Velvet 350gr</b></div>
+                  </div>
+                </div>
+                <div class="ai-step">
+                  <small>Πιθανό repeat job</small>
+                  <h3 class="link" style="margin:5px 0" onclick="go('fulljob')">JOB-1734 — Κάρτες delivery</h3>
+                  <div class="minor">Βρέθηκε παρόμοια προηγούμενη εργασία.</div>
+                </div>
+                <div class="ai-step"><small>Προηγούμενη συμφωνημένη τιμή</small><h2 style="margin:5px 0">120,00 €</h2></div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:14px">
+                  <button class="primary" onclick="createScratchJob()">＋ Δημιουργία εργασίας</button>
+                  <button class="outline" onclick="toast('Demo: επεξεργασία extracted fields')">✎ Επεξεργασία στοιχείων</button>
+                  <button class="ghost" onclick="resetScratch()">Καθαρισμός</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="nj-preset" class="newjob-tab">
+          <div class="card info-card">
+            <h3>ΕΠΙΛΟΓΗ PRESET</h3>
+            <div class="quick-presets" style="margin-top:10px">
+              <button onclick="selectPreset('Κάρτες')">▣ Κάρτες<br><small>Velvet 350gr</small></button>
+              <button onclick="selectPreset('Flyers')">▱ Flyers<br><small>Velvet 130gr</small></button>
+              <button onclick="selectPreset('Αφίσες')">▤ Αφίσες<br><small>Velvet 130gr</small></button>
+              <button onclick="selectPreset('Επιστολόχαρτα')">▧ Επιστολόχαρτα<br><small>Offset 100gr</small></button>
+            </div>
+            <div id="presetForm" style="display:none;margin-top:16px">
+              <div class="grid two-col">
+                <div><label class="minor">Πελάτης</label><input value="Mamma's Pizza" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:9px"></div>
+                <div><label class="minor">Ποσότητα</label><input value="1000" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:9px"></div>
+              </div>
+              <div class="note" style="margin-top:12px">Preset: <b id="presetName"></b>. Τα γνωστά defaults έχουν συμπληρωθεί αυτόματα και μπορείς να τα αλλάξεις πριν τη δημιουργία.</div>
+              <button class="primary" style="margin-top:12px" onclick="toast('Demo: εργασία από preset δημιουργήθηκε')">Δημιουργία εργασίας</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="nj-manual" class="newjob-tab">
+          <div class="card info-card">
+            <h3>ΧΕΙΡΟΚΙΝΗΤΗ ΔΗΜΙΟΥΡΓΙΑ</h3>
+            <div class="grid two-col">
+              <div><label class="minor">Πελάτης</label><input placeholder="Αναζήτηση πελάτη..." style="width:100%;padding:10px;border:1px solid var(--line);border-radius:9px"></div>
+              <div><label class="minor">Κατηγορία</label><select style="width:100%;padding:10px;border:1px solid var(--line);border-radius:9px"><option>Εκτυπώσεις</option><option>Γραφιστικά</option><option>Ιστοσελίδες</option><option>Άλλα</option></select></div>
+              <div><label class="minor">Περιγραφή</label><input placeholder="Περιγραφή εργασίας" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:9px"></div>
+              <div><label class="minor">Ποσότητα</label><input placeholder="π.χ. 1000" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:9px"></div>
+              <div><label class="minor">Διάσταση</label><input placeholder="π.χ. 8,5 × 5,5 cm" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:9px"></div>
+              <div><label class="minor">Υλικό</label><input placeholder="π.χ. Velvet 350gr" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:9px"></div>
+            </div>
+            <button class="primary" style="margin-top:14px" onclick="toast('Demo: χειροκίνητη εργασία δημιουργήθηκε')">Δημιουργία εργασίας</button>
+          </div>
+        </div>
+      </section>
+
+
+      <section id="tasks" class="page">
+        <div class="headerline">
+          <div>
+            <h1>Internal Tasks</h1>
+            <div class="sub">Εσωτερικές εκκρεμότητες, επαναλαμβανόμενες εργασίες και αναθέσεις.</div>
+          </div>
+          <button class="primary" onclick="openTaskModal()">＋ Νέο task</button>
+        </div>
+
+        <div class="tasks-top">
+          <div class="task-filterbar" id="taskFilters">
+            <button class="pill active" data-taskfilter="mine">Δικά μου</button>
+            <button class="pill" data-taskfilter="all">Όλοι</button>
+            <button class="pill" data-taskfilter="snoozed">Snoozed</button>
+            <button class="pill" data-taskfilter="completed">Completed</button>
+          </div>
+          <div class="minor">Τα ενεργά tasks είναι AI-prioritized.</div>
+        </div>
+
+        <div id="activeTasks" class="task-list"></div>
+
+        <div class="task-history">
+          <div class="statusline">
+            <h3>COMPLETED TASKS</h3>
+            <button class="ghost" onclick="toggleCompletedHistory()">Προβολή / Απόκρυψη</button>
+          </div>
+          <div id="completedTasks" class="task-list" style="display:none"></div>
+        </div>
+      </section>
+
+      <section id="quotes" class="page">
+        <div class="headerline">
+          <div>
+            <h1>Quotes <span class="badge b-gray">12</span></h1>
+            <div class="sub">Προσφορές, εκδόσεις, αποδοχή και μετατροπή σε εργασία.</div>
+          </div>
+          <button class="primary" onclick="openQuoteEditor()">＋ Νέα προσφορά</button>
+        </div>
+
+        <div id="quotesList">
+          <div class="toolbar">
+            <div class="filters">
+              <input id="quoteSearch" placeholder="Αναζήτηση προσφορών...">
+              <select><option>Status</option><option>Draft</option><option>Sent</option><option>Accepted</option><option>Rejected</option></select>
+              <select><option>Customer</option></select>
+            </div>
+          </div>
+
+          <div class="card table-wrap">
+            <table>
+              <thead><tr><th>Quote #</th><th>Πελάτης</th><th>Περιγραφή</th><th>Εναλλακτικές</th><th>Status</th><th>Τελευταία έκδοση</th><th>Ενημέρωση</th></tr></thead>
+              <tbody id="quotesBody">
+                <tr class="clickable" onclick="openQuoteDetail('Q-0261')">
+                  <td class="link">Q-0261</td><td>Nikolas</td><td>Flyers A5 δίπτυχα</td><td>3 ποσότητες</td><td><span class="badge b-blue">Sent</span></td><td>v2</td><td>πριν 1 ώρα</td>
+                </tr>
+                <tr class="clickable" onclick="openQuoteDetail('Q-0260')">
+                  <td class="link">Q-0260</td><td>Mamma's Pizza</td><td>Κάρτες delivery</td><td>2 ποσότητες</td><td><span class="badge b-green">Accepted</span></td><td>v1</td><td>χθες</td>
+                </tr>
+                <tr class="clickable" onclick="openQuoteDetail('Q-0259')">
+                  <td class="link">Q-0259</td><td>GreenLab</td><td>Logo + εταιρική ταυτότητα</td><td>1 τιμή</td><td><span class="badge b-orange">Draft</span></td><td>v1</td><td>2 μέρες</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="quoteEditor" style="display:none">
+          <div class="link" onclick="closeQuoteEditor()">← Επιστροφή στις προσφορές</div>
+          <div class="quote-layout" style="margin-top:14px">
+            <div class="card info-card">
+              <div class="statusline">
+                <div><h2 style="margin:0">Νέα προσφορά</h2><div class="minor">Draft · δεν έχει σταλεί</div></div>
+                <span class="badge b-orange">Draft</span>
+              </div>
+
+              <div class="grid two-col" style="margin-top:16px">
+                <div>
+                  <label class="minor">Πελάτης</label>
+                  <input id="qCustomer" value="Nikolas" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:9px">
+                </div>
+                <div>
+                  <label class="minor">Προϊόν / περιγραφή</label>
+                  <input id="qTitle" value="Flyers A5 δίπτυχα" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:9px">
+                </div>
+              </div>
+
+              <div class="card" style="padding:14px;margin-top:14px;background:#fbfcfe">
+                <h3 style="margin-top:0">SPECS</h3>
+                <div class="specs">
+                  <div class="spec"><small>Διάσταση</small><b>A5 δίπτυχο</b></div>
+                  <div class="spec"><small>Χαρτί</small><b>Velvet 130gr</b></div>
+                  <div class="spec"><small>Εκτύπωση</small><b>4/4</b></div>
+                  <div class="spec"><small>Finishing</small><b>1 δίπλωμα</b></div>
+                  <div class="spec"><small>Μέθοδος</small><b>Offset</b></div>
+                  <div class="spec"><small>Ισχύς τιμής</small><b>6 μήνες</b></div>
+                </div>
+              </div>
+
+              <h3 style="margin:18px 0 6px">ΠΟΣΟΤΗΤΕΣ & ΤΙΜΕΣ</h3>
+              <div class="quote-option selected">
+                <div><b>1.000 τεμ.</b><div class="minor">Προτεινόμενη τιμή 130–150 €</div></div>
+                <input value="145.00" type="number" step="0.01"> <b>€</b>
+              </div>
+              <div class="quote-option">
+                <div><b>2.000 τεμ.</b><div class="minor">Προτεινόμενη τιμή 185–215 €</div></div>
+                <input value="195.00" type="number" step="0.01"> <b>€</b>
+              </div>
+              <div class="quote-option">
+                <div><b>5.000 τεμ.</b><div class="minor">Προτεινόμενη τιμή 340–390 €</div></div>
+                <input value="360.00" type="number" step="0.01"> <b>€</b>
+              </div>
+
+              <button class="outline" style="margin-top:10px" onclick="toast('Demo: προστέθηκε νέα ποσότητα')">＋ Προσθήκη ποσότητας</button>
+
+              <div class="note" style="margin-top:14px">
+                Όταν σταλεί η προσφορά, τα specs, οι ποσότητες και οι τιμές αυτής της έκδοσης κλειδώνουν ως snapshot.
+              </div>
+
+              <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+                <button class="ghost" onclick="toast('Draft αποθηκεύτηκε')">Αποθήκευση draft</button>
+                <button class="primary" onclick="sendQuoteDemo()">Αποστολή προσφοράς</button>
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="card info-card">
+                <h3>AI PRICING CONTEXT</h3>
+                <p class="minor">Ίδιος πελάτης</p>
+                <div class="listrow"><div>↻</div><div><b>Flyers A5 · 2.000</b><div class="minor">Προηγούμενη συμφωνημένη τιμή</div></div><b>190 €</b></div>
+                <p class="minor" style="margin-top:14px">Παρόμοιες δουλειές</p>
+                <div class="listrow"><div>≋</div><div><b>Flyers A5 δίπτυχα</b><div class="minor">Άλλοι πελάτες · median</div></div><b>200 €</b></div>
+              </div>
+
+              <div class="card info-card">
+                <h3>VERSION</h3>
+                <div class="kv"><span>Τρέχουσα</span><b>Draft v1</b><span>Created by</span><b>Γιώργος</b><span>Snapshot</span><b>Όχι ακόμη</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="quoteDetail" style="display:none">
+          <div class="link" onclick="closeQuoteDetail()">← Επιστροφή στις προσφορές</div>
+          <div class="headerline" style="margin-top:12px">
+            <div>
+              <h1 style="margin-bottom:5px"><span class="link">Q-0261</span> · Flyers A5 δίπτυχα</h1>
+              <div class="sub">Nikolas · Τρέχουσα έκδοση v2</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="outline" onclick="newQuoteVersion()">＋ Νέα έκδοση</button>
+              <button class="primary" id="quoteAcceptBtn" onclick="acceptQuoteDemo()">Καταχώρηση αποδοχής</button>
+            </div>
+          </div>
+
+          <div class="card info-card">
+            <div class="quote-statusbar">
+              <div class="quote-state done"><span>Draft</span></div>
+              <div class="quote-state done"><span>Sent</span></div>
+              <div class="quote-state current" id="qStateAccepted"><span>Accepted</span></div>
+              <div class="quote-state" id="qStateJob"><span>Converted to Job</span></div>
+            </div>
+          </div>
+
+          <div class="quote-layout" style="margin-top:14px">
+            <div class="card info-card">
+              <div class="statusline">
+                <h3>ACCEPTED / AVAILABLE OPTIONS</h3>
+                <span id="quoteDetailStatus" class="badge b-blue">Sent</span>
+              </div>
+
+              <div class="quote-option" data-qopt="1000" onclick="selectQuoteOption(this)">
+                <div><b>1.000 τεμ.</b><div class="minor">Velvet 130gr · 4/4 · 1 δίπλωμα</div></div>
+                <b>145,00 €</b><span>○</span>
+              </div>
+              <div class="quote-option selected" data-qopt="2000" onclick="selectQuoteOption(this)">
+                <div><b>2.000 τεμ.</b><div class="minor">Velvet 130gr · 4/4 · 1 δίπλωμα</div></div>
+                <b>195,00 €</b><span>●</span>
+              </div>
+              <div class="quote-option" data-qopt="5000" onclick="selectQuoteOption(this)">
+                <div><b>5.000 τεμ.</b><div class="minor">Velvet 130gr · 4/4 · 1 δίπλωμα</div></div>
+                <b>360,00 €</b><span>○</span>
+              </div>
+
+              <div id="convertQuoteArea" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)">
+                <div class="note">
+                  Η επιλεγμένη accepted version θα μεταφερθεί αυτούσια στο νέο Job: specs, ποσότητα, συμφωνημένη τιμή και locked quote snapshot.
+                </div>
+                <button class="primary" style="margin-top:12px" onclick="convertQuoteToJob()">Μετατροπή σε Job</button>
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="card info-card">
+                <h3>VERSION HISTORY</h3>
+                <div class="quote-timeline">
+                  <div class="quote-event"><div class="event-icon">2</div><div><b>v2</b><div class="minor">Αλλαγή χαρτιού σε Velvet 130gr · τρέχουσα</div></div><small>Σήμερα</small></div>
+                  <div class="quote-event"><div class="event-icon">1</div><div><b>v1</b><div class="minor">Αρχική αποστολή</div></div><small>Χθες</small></div>
+                </div>
+              </div>
+
+              <div class="card info-card">
+                <h3>SNAPSHOT</h3>
+                <div class="kv"><span>Customer</span><b>Nikolas</b><span>Version</span><b>v2</b><span>Sent</span><b>Ναι</b><span>Editable</span><b>Όχι</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <section id="inbox" class="page">
+        <div class="headerline">
+          <div>
+            <h1>Inbox <span class="badge b-red">5</span></h1>
+            <div class="sub">Σημαντικά εισερχόμενα που χρειάζονται πραγματική ενέργεια.</div>
+          </div>
+        </div>
+
+        <div class="pills" id="inboxFilters" style="margin-bottom:14px">
+          <button class="pill active" data-inboxfilter="all">Όλα</button>
+          <button class="pill" data-inboxfilter="newjob">Πιθανές εργασίες</button>
+          <button class="pill" data-inboxfilter="quote">Προσφορές</button>
+          <button class="pill" data-inboxfilter="existing">Υπάρχουσες εργασίες</button>
+          <button class="pill" data-inboxfilter="question">Ερωτήσεις</button>
+        </div>
+
+        <div class="inbox-layout">
+          <div class="card info-card">
+            <h3>ΝΕΑ ΑΙΤΗΜΑΤΑ</h3>
+            <div id="inboxList" class="inbox-list">
+              <div class="inbox-item active" data-msg="m1" data-type="newjob" onclick="openInboxMessage('m1',this)">
+                <div class="top"><b>Mamma's Pizza</b><span class="badge b-purple">Viber</span></div>
+                <div class="preview">«Θέλω 1.000 ετικέτες ίδιες με την προηγούμενη φορά...»</div>
+                <div class="minor" style="margin-top:6px">AI: Πιθανό repeat job</div>
+              </div>
+
+              <div class="inbox-item" data-msg="m2" data-type="quote" onclick="openInboxMessage('m2',this)">
+                <div class="top"><b>Nikolas</b><span class="badge b-purple">Viber</span></div>
+                <div class="preview">«Θέλω προσφορά για 5.000 φυλλάδια A5 δίπτυχα.»</div>
+                <div class="minor" style="margin-top:6px">AI: Αίτημα προσφοράς</div>
+              </div>
+
+              <div class="inbox-item" data-msg="m3" data-type="existing" onclick="openInboxMessage('m3',this)">
+                <div class="top"><b>Coffee Island</b><span class="badge b-blue">Email</span></div>
+                <div class="preview">«Μπορείς να αλλάξεις το τηλέφωνο στο proof;»</div>
+                <div class="minor" style="margin-top:6px">AI: Διόρθωση σε υπάρχουσα εργασία</div>
+              </div>
+
+              <div class="inbox-item" data-msg="m4" data-type="question" onclick="openInboxMessage('m4',this)">
+                <div class="top"><b>TechMart</b><span class="badge b-blue">Email</span></div>
+                <div class="preview">«Πότε υπολογίζεις να είναι έτοιμες οι κάρτες;»</div>
+                <div class="minor" style="margin-top:6px">AI: Ερώτηση πελάτη</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card inbox-detail">
+            <div id="inboxDetailContent"></div>
+          </div>
+        </div>
+      </section>
+      <section id="payments" class="page"><div class="headerline"><div><h1>Payments</h1></div></div><div class="card info-card">Payments module — placeholder.</div></section>
+      <section id="invoices" class="page"><div class="headerline"><div><h1>Invoices</h1></div></div><div class="card info-card">Invoices module — placeholder.</div></section>
+      <section id="suppliers" class="page"><div class="headerline"><div><h1>Suppliers</h1></div></div><div class="card info-card">Suppliers module — placeholder.</div></section>
+      <section id="materials" class="page"><div class="headerline"><div><h1>Materials</h1></div></div><div class="card info-card">Materials module — placeholder.</div></section>
+      <section id="files" class="page"><div class="headerline"><div><h1>Files (Local)</h1></div></div><div class="card info-card">Local agent/files — placeholder.</div></section>
+      <section id="reports" class="page"><div class="headerline"><div><h1>Reports</h1></div></div><div class="card info-card">Reports — placeholder.</div></section>
+      <section id="settings" class="page"><div class="headerline"><div><h1>Settings</h1></div></div><div class="card info-card">Settings — placeholder.</div></section>
+    </div>
+  </main>
+</div>
+
+<div id="drawer" class="drawer">
+  <button class="close" onclick="closeDrawer()">×</button>
+  <span id="drawerStatus" class="badge b-blue">Σε παραγωγή</span>
+  <h2 id="drawerTitle">Ετικέτες sauce cups</h2>
+  <div id="drawerCustomer" class="link" onclick="go('customers');closeDrawer()">Mamma's Pizza</div>
+  <div class="detail-group">
+    <h3>ΒΑΣΙΚΑ ΣΤΟΙΧΕΙΑ</h3>
+    <div class="kv"><span>Ποσότητα</span><b id="drawerQty">1.000 τεμ.</b><span>Διάσταση</span><b>10 × 6 cm</b><span>Υλικό</span><b>PP White</b><span>Μηχανή</span><b>PrimeLink C9265</b><span>Πληρωμή</span><b id="drawerPayment"><span class="badge b-green">Πληρωμένο</span></b><span>Συμφωνημένη τιμή</span><b id="drawerPrice">145,00 €</b></div>
+  </div>
+  <div class="detail-group"><h3>APPROVED PROOF</h3><div class="proof"></div></div>
+  <div class="detail-group">
+    <h3>ΓΡΗΓΟΡΕΣ ΕΝΕΡΓΕΙΕΣ</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <button class="outline" onclick="setDrawerStatus('Σε παραγωγή')">Σε παραγωγή</button>
+      <button class="outline" onclick="setDrawerStatus('Έτοιμο')">Έτοιμο</button>
+      <button class="outline" onclick="setDrawerStatus('Παραδόθηκε')">Παραδόθηκε</button>
+      <button class="outline" onclick="markDrawerPaid()">Πληρωμένο</button>
+    </div>
+    <button class="primary" style="width:100%" onclick="go('fulljob');closeDrawer()">Άνοιγμα πλήρους εργασίας</button>
+  </div>
+</div>
+
+
+
+<div id="taskModal" class="modalback" onclick="taskModalBackdrop(event)">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;gap:12px">
+      <div>
+        <h2>Νέο internal task</h2>
+        <div class="sub">Standalone task ή task συνδεδεμένο με customer/job.</div>
+      </div>
+      <button class="close" onclick="closeTaskModal()">×</button>
+    </div>
+
+    <div class="task-modal-grid" style="margin-top:16px">
+      <div>
+        <label class="minor">Τίτλος</label>
+        <input id="taskTitleInput" value="Παραγγελία toner">
+      </div>
+      <div>
+        <label class="minor">Assigned</label>
+        <select id="taskAssigneeInput">
+          <option>Γιώργος</option>
+          <option>Νίκος</option>
+          <option>Όλοι</option>
+        </select>
+      </div>
+      <div>
+        <label class="minor">Ημερομηνία</label>
+        <input id="taskDateInput" type="date" value="2026-08-17">
+      </div>
+      <div>
+        <label class="minor">Recurrence</label>
+        <select id="taskRecurrenceInput">
+          <option value="">Καμία</option>
+          <option value="weekly">Κάθε εβδομάδα</option>
+          <option value="monthly">Κάθε μήνα</option>
+          <option value="quarterly">Κάθε 3 μήνες</option>
+        </select>
+      </div>
+      <div>
+        <label class="minor">Σύνδεση</label>
+        <select id="taskLinkInput">
+          <option value="">Χωρίς σύνδεση</option>
+          <option value="Mamma's Pizza">Mamma's Pizza</option>
+          <option value="JOB-1842">JOB-1842</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="note" style="margin-top:14px">
+      Αν είναι recurring, η ολοκλήρωση αυτής της occurrence δημιουργεί την επόμενη occurrence αυτόματα.
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+      <button class="ghost" onclick="closeTaskModal()">Ακύρωση</button>
+      <button class="primary" onclick="createTaskDemo()">Αποθήκευση</button>
+    </div>
+  </div>
+</div>
+
+<div id="deliveryModal" class="modalback" onclick="modalBackdropClose(event)">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+      <div>
+        <h2>Παράδοση εργασίας</h2>
+        <div class="sub">Η παράδοση είναι operational action. Διάλεξε ξεχωριστά τι θα γίνει οικονομικά.</div>
+      </div>
+      <button class="close" onclick="closeDeliveryFlow()">×</button>
+    </div>
+
+    <div class="option-card" data-finopt="balance" onclick="selectFinanceOption('balance')">
+      <b>Χρέωση στο υπόλοιπο πελάτη</b>
+      <div class="minor">Καταχώρηση χρέωσης 145,00 € στο customer ledger. Δεν καταχωρείται πληρωμή.</div>
+    </div>
+
+    <div class="option-card" data-finopt="paid" onclick="selectFinanceOption('paid')">
+      <b>Πληρωμή κατά την παραλαβή</b>
+      <div class="minor">Καταχωρείται χρέωση + αντίστοιχη πληρωμή ως δύο ξεχωριστές ledger entries.</div>
+    </div>
+
+    <div class="option-card" data-finopt="partial" onclick="selectFinanceOption('partial')">
+      <b>Μερική πληρωμή</b>
+      <div class="minor">Καταχωρείται όλη η χρέωση και ξεχωριστή μερική πληρωμή.</div>
+      <div id="partialAmount" class="amount-row">
+        <input id="partialPaymentInput" type="number" min="0" step="0.01" value="50" /> €
+      </div>
+    </div>
+
+    <div class="note" style="margin-top:12px">
+      Κανένα οικονομικό record δεν γράφεται χωρίς την τελική επιβεβαίωσή σου.
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+      <button class="ghost" onclick="closeDeliveryFlow()">Ακύρωση</button>
+      <button class="primary" onclick="confirmDelivery()">Επιβεβαίωση παράδοσης</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const pages = [...document.querySelectorAll('.page')];
+const navButtons = [...document.querySelectorAll('.nav button[data-page]')];
+function go(id){
+  pages.forEach(p=>p.classList.toggle('active',p.id===id));
+  navButtons.forEach(b=>b.classList.toggle('active',b.dataset.page===id || (id==='fulljob' && b.dataset.page==='jobs') || (id==='ledger' && b.dataset.page==='customers') || (id==='newjob' && b.dataset.page==='jobs')));
+  document.getElementById('breadcrumb').textContent = id==='fulljob' ? 'Jobs › JOB-1842' : id==='ledger' ? 'Customers › Mamma’s Pizza › Ledger' : id==='newjob' ? 'Jobs › Νέα εργασία' : id.charAt(0).toUpperCase()+id.slice(1);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+navButtons.forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
+
+let currentDrawerRow=null;
+function badgeClassForStatus(s){
+  if(/Παραδόθηκε|Έτοιμο/i.test(s)) return 'b-green';
+  if(/παραγωγή|Νέα/i.test(s)) return 'b-blue';
+  if(/έγκριση/i.test(s)) return 'b-orange';
+  if(/εξέλιξη/i.test(s)) return 'b-purple';
+  return 'b-gray';
+}
+function badgeClassForPayment(s){
+  if(/Πληρωμένο/i.test(s)) return 'b-green';
+  if(/Ανεξόφλητο/i.test(s)) return 'b-red';
+  return 'b-orange';
+}
+function openDrawer(row){
+  document.querySelectorAll('tr.selected').forEach(r=>r.classList.remove('selected'));
+  row.classList.add('selected');
+  currentDrawerRow=row;
+  const d=row.dataset;
+  document.getElementById('drawerTitle').textContent=d.title||'Εργασία';
+  document.getElementById('drawerCustomer').textContent=d.customer||'—';
+  document.getElementById('drawerQty').textContent=d.qty ? Number(d.qty).toLocaleString('el-GR')+' τεμ.' : '—';
+  document.getElementById('drawerPrice').textContent=(Number(d.price||0)).toLocaleString('el-GR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+  const st=document.getElementById('drawerStatus');
+  st.textContent=d.status||'Νέα';
+  st.className='badge '+badgeClassForStatus(d.status||'Νέα');
+  document.getElementById('drawerPayment').innerHTML='<span class="badge '+badgeClassForPayment(d.payment||'Ανεξόφλητο')+'">'+(d.payment||'Ανεξόφλητο')+'</span>';
+  document.getElementById('drawer').classList.add('open');
+}
+function setDrawerStatus(status){
+  if(!currentDrawerRow)return;
+  currentDrawerRow.dataset.status=status;
+  const statusCell=currentDrawerRow.children[6];
+  if(statusCell) statusCell.innerHTML='<span class="badge '+badgeClassForStatus(status)+'">'+status+'</span>';
+  const st=document.getElementById('drawerStatus'); st.textContent=status; st.className='badge '+badgeClassForStatus(status);
+  persistRowIfStored(currentDrawerRow);
+  toast('Status → '+status);
+}
+function markDrawerPaid(){
+  if(!currentDrawerRow)return;
+  currentDrawerRow.dataset.payment='Πληρωμένο';
+  const payCell=currentDrawerRow.children[8];
+  if(payCell) payCell.innerHTML='<span class="badge b-green">Πληρωμένο</span>';
+  document.getElementById('drawerPayment').innerHTML='<span class="badge b-green">Πληρωμένο</span>';
+  persistRowIfStored(currentDrawerRow);
+  toast('Payment status → Πληρωμένο');
+}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open')}
+
+document.querySelectorAll('[data-jobtab]').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('[data-jobtab]').forEach(t=>t.classList.toggle('active',t===tab));
+    document.querySelectorAll('.job-tab').forEach(p=>p.classList.toggle('active',p.id===tab.dataset.jobtab));
+  })
+})
+
+document.querySelectorAll('#dashFilters .pill').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#dashFilters .pill').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    const f=btn.dataset.filter;
+    document.querySelectorAll('#dashboard [data-cat]').forEach(el=>{
+      el.style.display=(f==='all'||el.dataset.cat===f)?'':'none';
+    })
+  })
+});
+document.querySelectorAll('#jobFilters .pill').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#jobFilters .pill').forEach(x=>x.classList.remove('active')); btn.classList.add('active');
+  })
+});
+function showLedger(){go('ledger')}
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+document.querySelectorAll('[data-newjobtab]').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('[data-newjobtab]').forEach(t=>t.classList.toggle('active',t===tab));
+    document.querySelectorAll('.newjob-tab').forEach(p=>p.classList.toggle('active',p.id===tab.dataset.newjobtab));
+  })
+});
+
+function fillScratchExample(){
+  document.getElementById('scratchPrompt').value="1.000 επαγγελματικές κάρτες για Mamma's Pizza, ίδιες με τις προηγούμενες. 8,5 × 5,5, Velvet 350gr.";
+}
+function analyseScratch(){
+  const v=document.getElementById('scratchPrompt').value.trim();
+  if(!v){toast('Γράψε πρώτα μια σύντομη περιγραφή της δουλειάς.');return;}
+  document.getElementById('scratchEmpty').style.display='none';
+  const hasCustomer=/mamma|coffee|greenlab|pharma|techmart/i.test(v);
+  if(!hasCustomer){
+    document.getElementById('scratchQuestion').style.display='block';
+    document.getElementById('scratchReview').style.display='none';
+    return;
+  }
+  document.getElementById('scratchQuestion').style.display='none';
+  populateScratchReview(v,"Mamma's Pizza");
+}
+function answerScratchCustomer(name){
+  const v=document.getElementById('scratchPrompt').value.trim();
+  document.getElementById('scratchQuestion').style.display='none';
+  populateScratchReview(v,name);
+}
+function populateScratchReview(v,customer){
+  document.getElementById('scratchReview').style.display='block';
+  document.getElementById('rvCustomer').textContent=customer;
+  const qty=(v.match(/(\d[\d\.\s]*)\s*(?:τεμ|κάρτ|φυλλ|αντίτυπ)/i)||[])[1];
+  if(qty) document.getElementById('rvQty').textContent=qty.trim()+' τεμ.';
+  if(/flyer|φυλλάδ/i.test(v)) document.getElementById('rvDesc').textContent='Flyers';
+  else if(/αφίσ/i.test(v)) document.getElementById('rvDesc').textContent='Αφίσες';
+  else if(/κάρτ/i.test(v)) document.getElementById('rvDesc').textContent='Επαγγελματικές κάρτες';
+  if(/ιστοσελ|website|wordpress/i.test(v)){
+    document.getElementById('rvCategory').textContent='Ιστοσελίδες';
+    document.getElementById('rvMaterial').textContent='—';
+    document.getElementById('rvSize').textContent='—';
+  } else if(/λογότυπ|logo|γραφισ/i.test(v)){
+    document.getElementById('rvCategory').textContent='Γραφιστικά';
+  } else {
+    document.getElementById('rvCategory').textContent='Εκτυπώσεις';
+  }
+}
+function createScratchJob(){
+  const customer=document.getElementById('rvCustomer').textContent.trim() || 'Χωρίς πελάτη';
+  const title=document.getElementById('rvDesc').textContent.trim() || 'Νέα εργασία';
+  const qtyTxt=document.getElementById('rvQty').textContent.trim();
+  const qty=(qtyTxt.match(/\d[\d\.\s]*/)||[''])[0].replace(/\D/g,'');
+  const category=document.getElementById('rvCategory').textContent.trim() || 'Άλλα';
+  const job={
+    id:'JOB-'+Math.floor(1900+Math.random()*80),
+    title, customer, qty, category,
+    status:'Νέα',
+    price:'0.00',
+    payment:'Ανεξόφλητο',
+    createdAt:new Date().toISOString()
+  };
+  const arr=JSON.parse(localStorage.getItem('typoDemoJobs')||'[]');
+  arr.unshift(job);
+  localStorage.setItem('typoDemoJobs',JSON.stringify(arr));
+  renderStoredJobs();
+  toast('Η νέα εργασία δημιουργήθηκε και προστέθηκε στα Jobs');
+  setTimeout(()=>go('jobs'),550);
+}
+function resetScratch(){
+  document.getElementById('scratchPrompt').value='';
+  document.getElementById('scratchEmpty').style.display='block';
+  document.getElementById('scratchQuestion').style.display='none';
+  document.getElementById('scratchReview').style.display='none';
+}
+function selectPreset(name){
+  document.getElementById('presetName').textContent=name;
+  document.getElementById('presetForm').style.display='block';
+}
+
+
+function storedRowHTML(j){
+  const q=j.qty ? Number(j.qty).toLocaleString('el-GR')+' τεμ.' : '—';
+  const price=Number(j.price||0).toLocaleString('el-GR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+  return `<tr class="clickable demo-stored" data-job="${j.id}" data-title="${j.title}" data-customer="${j.customer}" data-qty="${j.qty||''}" data-category="${j.category}" data-status="${j.status}" data-price="${j.price||0}" data-payment="${j.payment}" onclick="openDrawer(this)">
+    <td>☆</td><td class="link">${j.id}</td><td><div class="job-title">${j.title}</div><div class="minor">Δημιουργήθηκε από το demo</div></td><td>${j.customer}</td><td>${q}</td><td>${j.category}</td><td><span class="badge ${badgeClassForStatus(j.status)}">${j.status}</span></td><td>${price}</td><td><span class="badge ${badgeClassForPayment(j.payment)}">${j.payment}</span></td><td>μόλις τώρα</td>
+  </tr>`;
+}
+function renderStoredJobs(){
+  const body=document.getElementById('jobsBody'); if(!body)return;
+  body.querySelectorAll('.demo-stored').forEach(r=>r.remove());
+  const arr=JSON.parse(localStorage.getItem('typoDemoJobs')||'[]');
+  arr.slice().reverse().forEach(j=>body.insertAdjacentHTML('afterbegin',storedRowHTML(j)));
+  applyJobFilters();
+}
+function persistRowIfStored(row){
+  if(!row.classList.contains('demo-stored')) return;
+  const arr=JSON.parse(localStorage.getItem('typoDemoJobs')||'[]');
+  const i=arr.findIndex(x=>x.id===row.dataset.job);
+  if(i>=0){
+    arr[i].status=row.dataset.status;
+    arr[i].payment=row.dataset.payment;
+    localStorage.setItem('typoDemoJobs',JSON.stringify(arr));
+  }
+}
+let currentJobCategory='all';
+function applyJobFilters(){
+  const q=(document.getElementById('jobsSearch')?.value||'').toLowerCase().trim();
+  document.querySelectorAll('#jobsBody tr.clickable').forEach(row=>{
+    const matchesCat=currentJobCategory==='all'||row.dataset.category===currentJobCategory;
+    const hay=[row.dataset.job,row.dataset.title,row.dataset.customer,row.dataset.category,row.dataset.status].join(' ').toLowerCase();
+    const matchesQ=!q||hay.includes(q);
+    row.style.display=(matchesCat&&matchesQ)?'':'none';
+  });
+}
+document.querySelectorAll('#jobFilters .pill[data-jobfilter]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    currentJobCategory=btn.dataset.jobfilter;
+    document.querySelectorAll('#jobFilters .pill').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    applyJobFilters();
+  });
+});
+document.getElementById('jobsSearch')?.addEventListener('input',applyJobFilters);
+renderStoredJobs();
+
+
+const lifecycleOrder=['new','production','ready','delivered'];
+let lifecycleState=localStorage.getItem('typoLifecycleState') || 'production';
+let selectedFinanceOption='paid';
+
+function renderLifecycle(){
+  const idx=lifecycleOrder.indexOf(lifecycleState);
+  lifecycleOrder.forEach((s,i)=>{
+    const el=document.getElementById('life-'+s);
+    if(!el)return;
+    el.classList.remove('done','current');
+    const dot=el.querySelector('.life-dot');
+    if(i<idx){el.classList.add('done');dot.textContent='✓';}
+    else if(i===idx){el.classList.add('current');dot.textContent=String(i+1);}
+    else {dot.textContent=String(i+1);}
+  });
+  const start=document.getElementById('btnStartProduction');
+  const complete=document.getElementById('btnCompleteProduction');
+  const deliver=document.getElementById('btnDeliverJob');
+  if(start) start.style.display=lifecycleState==='new'?'':'none';
+  if(complete) complete.style.display=lifecycleState==='production'?'':'none';
+  if(deliver) deliver.style.display=lifecycleState==='ready'?'':'none';
+}
+function advanceLifecycle(target){
+  lifecycleState=target;
+  localStorage.setItem('typoLifecycleState',target);
+  renderLifecycle();
+  if(target==='production') toast('Η εργασία μπήκε σε παραγωγή.');
+  if(target==='ready') toast('Η παραγωγή ολοκληρώθηκε → Έτοιμη για παραλαβή.');
+}
+function openDeliveryFlow(){
+  selectedFinanceOption='paid';
+  document.querySelectorAll('[data-finopt]').forEach(x=>x.classList.toggle('selected',x.dataset.finopt==='paid'));
+  document.getElementById('partialAmount').classList.remove('show');
+  document.getElementById('deliveryModal').classList.add('open');
+}
+function closeDeliveryFlow(){document.getElementById('deliveryModal').classList.remove('open')}
+function modalBackdropClose(e){if(e.target.id==='deliveryModal')closeDeliveryFlow()}
+function selectFinanceOption(opt){
+  selectedFinanceOption=opt;
+  document.querySelectorAll('[data-finopt]').forEach(x=>x.classList.toggle('selected',x.dataset.finopt===opt));
+  document.getElementById('partialAmount').classList.toggle('show',opt==='partial');
+}
+function confirmDelivery(){
+  lifecycleState='delivered';
+  localStorage.setItem('typoLifecycleState','delivered');
+
+  if(selectedFinanceOption==='balance'){
+    document.getElementById('lifePayment').innerHTML='<span class="badge b-red">Ανεξόφλητο</span>';
+    document.getElementById('lifeLedger').textContent='Χρέωση +145,00 €';
+  }else if(selectedFinanceOption==='paid'){
+    document.getElementById('lifePayment').innerHTML='<span class="badge b-green">Πληρωμένο</span>';
+    document.getElementById('lifeLedger').textContent='Χρέωση +145 € / Πληρωμή −145 €';
+  }else{
+    const a=Number(document.getElementById('partialPaymentInput').value||0);
+    document.getElementById('lifePayment').innerHTML='<span class="badge b-orange">Μερική πληρωμή</span>';
+    document.getElementById('lifeLedger').textContent='Χρέωση +145 € / Πληρωμή −'+a.toLocaleString('el-GR',{minimumFractionDigits:2})+' €';
+  }
+
+  renderLifecycle();
+  closeDeliveryFlow();
+  toast('Η εργασία παραδόθηκε και η οικονομική ενέργεια καταχωρήθηκε στο demo.');
+}
+renderLifecycle();
+
+
+let proofState=localStorage.getItem('typoProofState') || 'approved';
+
+function renderProofState(){
+  const badge=document.getElementById('proofBadge');
+  const meta=document.getElementById('proofMeta');
+  const summary=document.getElementById('commSummary');
+  const next=document.getElementById('nextActionText');
+  if(!badge || !meta) return;
+
+  if(proofState==='sent'){
+    badge.textContent='Περιμένει έγκριση';
+    badge.className='badge b-orange';
+    meta.textContent='Proof στάλθηκε · αναμονή απάντησης πελάτη';
+    if(summary) summary.textContent='Το proof έχει σταλεί στον πελάτη και περιμένουμε έγκριση ή διορθώσεις.';
+    if(next) next.textContent='Αναμονή feedback πελάτη.';
+  }else{
+    badge.textContent='Εγκεκριμένο';
+    badge.className='badge b-green';
+    meta.textContent='Εγκρίθηκε μέσω Viber · 14/05/2024 · 15:42';
+    if(summary) summary.textContent='Ο πελάτης ζήτησε τις ίδιες ετικέτες με την προηγούμενη φορά. Το proof στάλθηκε και εγκρίθηκε χωρίς αλλαγές.';
+    if(next) next.textContent='Συνέχιση παραγωγής.';
+  }
+}
+function sendProofDemo(){
+  proofState='sent';
+  localStorage.setItem('typoProofState',proofState);
+  renderProofState();
+  const tl=document.getElementById('commTimeline');
+  if(tl){
+    tl.insertAdjacentHTML('afterbegin',`<div class="listrow"><div><span class="badge b-blue">Email</span></div><div><b>Typographic</b><div style="margin-top:4px">Νέο proof στάλθηκε στον πελάτη.</div></div><small>τώρα</small></div>`);
+  }
+  toast('Proof στάλθηκε → το job περιμένει feedback πελάτη.');
+}
+function approveProofDemo(){
+  proofState='approved';
+  localStorage.setItem('typoProofState',proofState);
+  renderProofState();
+  const tl=document.getElementById('commTimeline');
+  if(tl){
+    tl.insertAdjacentHTML('afterbegin',`<div class="listrow"><div><span class="badge b-purple">Viber</span></div><div><b>Mamma's Pizza</b><div style="margin-top:4px">«Οκ, προχωρήστε.»</div></div><small>τώρα</small></div>`);
+  }
+  toast('Καταχωρήθηκε έγκριση proof.');
+}
+function sendReplyDemo(){
+  const v=document.getElementById('replyDraft')?.value?.trim();
+  if(!v){toast('Το draft είναι κενό.');return;}
+  const tl=document.getElementById('commTimeline');
+  if(tl){
+    tl.insertAdjacentHTML('afterbegin',`<div class="listrow"><div><span class="badge b-purple">Viber</span></div><div><b>Typographic</b><div style="margin-top:4px">${v.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div><small>τώρα</small></div>`);
+  }
+  toast('Το μήνυμα στάλθηκε — demo.');
+}
+renderProofState();
+
+
+let selectedQuoteQty='2000';
+let quoteAccepted=localStorage.getItem('typoQuoteAccepted')==='1';
+let quoteConverted=localStorage.getItem('typoQuoteConverted')==='1';
+
+function openQuoteEditor(){
+  document.getElementById('quotesList').style.display='none';
+  document.getElementById('quoteDetail').style.display='none';
+  document.getElementById('quoteEditor').style.display='block';
+}
+function closeQuoteEditor(){
+  document.getElementById('quoteEditor').style.display='none';
+  document.getElementById('quotesList').style.display='block';
+}
+function openQuoteDetail(id){
+  document.getElementById('quotesList').style.display='none';
+  document.getElementById('quoteEditor').style.display='none';
+  document.getElementById('quoteDetail').style.display='block';
+  renderQuoteState();
+}
+function closeQuoteDetail(){
+  document.getElementById('quoteDetail').style.display='none';
+  document.getElementById('quotesList').style.display='block';
+}
+function sendQuoteDemo(){
+  toast('Η προσφορά στάλθηκε και δημιουργήθηκε locked snapshot v1.');
+  setTimeout(()=>{closeQuoteEditor();openQuoteDetail('Q-0261')},450);
+}
+function newQuoteVersion(){
+  toast('Δημιουργήθηκε νέα draft version από την προηγούμενη έκδοση.');
+}
+function selectQuoteOption(el){
+  document.querySelectorAll('[data-qopt]').forEach(x=>{
+    x.classList.toggle('selected',x===el);
+    const marker=x.lastElementChild;
+    if(marker) marker.textContent=x===el?'●':'○';
+  });
+  selectedQuoteQty=el.dataset.qopt;
+}
+function acceptQuoteDemo(){
+  quoteAccepted=true;
+  localStorage.setItem('typoQuoteAccepted','1');
+  renderQuoteState();
+  toast('Καταχωρήθηκε αποδοχή προσφοράς.');
+}
+function renderQuoteState(){
+  const status=document.getElementById('quoteDetailStatus');
+  const convert=document.getElementById('convertQuoteArea');
+  const acc=document.getElementById('qStateAccepted');
+  const job=document.getElementById('qStateJob');
+  const btn=document.getElementById('quoteAcceptBtn');
+  if(!status)return;
+  if(quoteConverted){
+    status.textContent='Converted to Job';
+    status.className='badge b-green';
+    convert.style.display='none';
+    acc.classList.add('done');acc.classList.remove('current');
+    job.classList.add('current');
+    if(btn) btn.style.display='none';
+  }else if(quoteAccepted){
+    status.textContent='Accepted';
+    status.className='badge b-green';
+    convert.style.display='block';
+    acc.classList.add('current');
+    if(btn) btn.style.display='none';
+  }else{
+    status.textContent='Sent';
+    status.className='badge b-blue';
+    convert.style.display='none';
+    if(btn) btn.style.display='';
+  }
+}
+function convertQuoteToJob(){
+  const map={
+    '1000':{qty:'1000',price:'145.00'},
+    '2000':{qty:'2000',price:'195.00'},
+    '5000':{qty:'5000',price:'360.00'}
+  };
+  const opt=map[selectedQuoteQty]||map['2000'];
+  const job={
+    id:'JOB-'+Math.floor(1980+Math.random()*15),
+    title:'Flyers A5 δίπτυχα',
+    customer:'Nikolas',
+    qty:opt.qty,
+    category:'Εκτυπώσεις',
+    status:'Νέα',
+    price:opt.price,
+    payment:'Ανεξόφλητο',
+    createdAt:new Date().toISOString(),
+    quote:'Q-0261'
+  };
+  const arr=JSON.parse(localStorage.getItem('typoDemoJobs')||'[]');
+  arr.unshift(job);
+  localStorage.setItem('typoDemoJobs',JSON.stringify(arr));
+  quoteConverted=true;
+  localStorage.setItem('typoQuoteConverted','1');
+  renderStoredJobs();
+  renderQuoteState();
+  toast('Η accepted προσφορά μετατράπηκε σε Job.');
+  setTimeout(()=>go('jobs'),650);
+}
+renderQuoteState();
+
+
+const defaultTasks=[
+  {id:'T-101',title:'Παραγγελία toner',assignee:'Γιώργος',date:'2026-08-18',recurrence:'',link:'Xerox 550',status:'active',snoozedUntil:''},
+  {id:'T-102',title:'Πληρωμή A&G Paper',assignee:'Γιώργος',date:'2026-08-19',recurrence:'monthly',link:'A&G Paper',status:'active',snoozedUntil:''},
+  {id:'T-103',title:'Ανανέωση SSL πιστοποιητικού',assignee:'Νίκος',date:'2026-08-21',recurrence:'quarterly',link:'typographic.gr',status:'active',snoozedUntil:''},
+  {id:'T-104',title:'Να καλέσω λογιστή για ΦΠΑ',assignee:'Γιώργος',date:'2026-08-16',recurrence:'',link:'',status:'active',snoozedUntil:''},
+  {id:'T-105',title:'Έλεγχος παραλαβών ημέρας',assignee:'Όλοι',date:'2026-08-16',recurrence:'',link:'',status:'active',snoozedUntil:''},
+  {id:'T-090',title:'Έλεγχος backup',assignee:'Γιώργος',date:'2026-08-10',recurrence:'weekly',link:'',status:'completed',completedAt:'2026-08-10'}
+];
+function getTasks(){
+  const raw=localStorage.getItem('typoTasks');
+  if(raw) return JSON.parse(raw);
+  localStorage.setItem('typoTasks',JSON.stringify(defaultTasks));
+  return JSON.parse(JSON.stringify(defaultTasks));
+}
+function saveTasks(arr){localStorage.setItem('typoTasks',JSON.stringify(arr))}
+let taskFilter='mine';
+
+function recurrenceLabel(r){
+  return r==='weekly'?'Κάθε εβδομάδα':r==='monthly'?'Κάθε μήνα':r==='quarterly'?'Κάθε 3 μήνες':'';
+}
+function taskCardHTML(t){
+  const snoozed=!!t.snoozedUntil;
+  const completed=t.status==='completed';
+  return `<div class="task-card ${snoozed?'snoozed':''} ${completed?'completed':''}" data-taskid="${t.id}">
+    <div class="check" onclick="${completed?`reopenTask('${t.id}')`:`completeTask('${t.id}')`}">${completed?'↻':'✓'}</div>
+    <div>
+      <b>${t.title}</b>
+      <div class="minor" style="margin-top:3px">${t.link?`Σύνδεση: ${t.link}`:'Standalone task'}</div>
+      <div class="task-meta">
+        <span class="badge b-gray">Assigned: ${t.assignee}</span>
+        ${t.date?`<span class="badge ${new Date(t.date)<new Date('2026-08-16')?'b-red':'b-blue'}">${t.date}</span>`:''}
+        ${t.recurrence?`<span class="badge b-purple">↻ ${recurrenceLabel(t.recurrence)}</span>`:''}
+        ${snoozed?`<span class="badge b-orange">Snoozed: ${t.snoozedUntil}</span>`:''}
+        ${completed?`<span class="badge b-green">Completed</span>`:''}
+      </div>
+    </div>
+    <div class="task-actions">
+      ${completed?`<button class="outline" onclick="reopenTask('${t.id}')">Reopen</button>`:
+      `<button class="outline" onclick="openSnoozeMenu(event,'${t.id}')">Αναβολή</button>
+       <select class="assignee-select" title="Ανάθεση" onchange="updateTaskAssignee('${t.id}',this.value)">
+         <option value="Γιώργος" ${t.assignee==='Γιώργος'?'selected':''}>Γιώργος</option>
+         <option value="Νίκος" ${t.assignee==='Νίκος'?'selected':''}>Νίκος</option>
+         <option value="Όλοι" ${t.assignee==='Όλοι'?'selected':''}>Όλοι</option>
+       </select>
+       <button class="task-icon-btn" title="Επεξεργασία" aria-label="Επεξεργασία" onclick="editTask('${t.id}')">✎</button>
+       <button class="task-icon-btn" title="Καρφίτσωμα" aria-label="Καρφίτσωμα" onclick="pinTaskDemo('${t.id}')">📌</button>`}
+    </div>
+  </div>`;
+}
+function renderTasks(){
+  const arr=getTasks();
+  const active=document.getElementById('activeTasks');
+  const completed=document.getElementById('completedTasks');
+  if(!active||!completed)return;
+
+  let visible=arr.filter(t=>t.status!=='completed');
+  if(taskFilter==='mine') visible=visible.filter(t=>(t.assignee==='Γιώργος' || t.assignee==='Όλοι') && !t.snoozedUntil);
+  if(taskFilter==='all') visible=visible.filter(t=>!t.snoozedUntil);
+  if(taskFilter==='snoozed') visible=visible.filter(t=>!!t.snoozedUntil);
+  if(taskFilter==='completed') visible=[];
+
+  active.innerHTML=visible.map(taskCardHTML).join('') || '<div class="card info-card"><div class="minor">Δεν υπάρχουν tasks σε αυτό το φίλτρο.</div></div>';
+  completed.innerHTML=arr.filter(t=>t.status==='completed').map(taskCardHTML).join('') || '<div class="minor">Δεν υπάρχουν completed tasks.</div>';
+
+  completed.style.display=taskFilter==='completed'?'flex':completed.style.display;
+}
+document.querySelectorAll('#taskFilters .pill').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#taskFilters .pill').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    taskFilter=btn.dataset.taskfilter;
+    if(taskFilter==='completed') document.getElementById('completedTasks').style.display='flex';
+    renderTasks();
+  });
+});
+function completeTask(id){
+  const arr=getTasks(); const t=arr.find(x=>x.id===id); if(!t)return;
+  t.status='completed'; t.completedAt='2026-08-16'; t.snoozedUntil='';
+  if(t.recurrence){
+    const next={...t,id:'T-'+Math.floor(200+Math.random()*700),status:'active',completedAt:'',snoozedUntil:''};
+    const d=new Date(t.date||'2026-08-16');
+    if(t.recurrence==='weekly') d.setDate(d.getDate()+7);
+    if(t.recurrence==='monthly') d.setMonth(d.getMonth()+1);
+    if(t.recurrence==='quarterly') d.setMonth(d.getMonth()+3);
+    next.date=d.toISOString().slice(0,10);
+    arr.push(next);
+    toast('Task ολοκληρώθηκε και δημιουργήθηκε η επόμενη occurrence.');
+  }else toast('Task ολοκληρώθηκε.');
+  saveTasks(arr); renderTasks();
+}
+function reopenTask(id){
+  const arr=getTasks(); const t=arr.find(x=>x.id===id); if(!t)return;
+  t.status='active'; t.completedAt=''; t.date='2026-08-17';
+  saveTasks(arr); taskFilter='mine';
+  document.querySelectorAll('#taskFilters .pill').forEach(x=>x.classList.toggle('active',x.dataset.taskfilter==='mine'));
+  renderTasks(); toast('Το task έγινε Reopen και επαναξιολογήθηκε ως ενεργό.');
+}
+function updateTaskAssignee(id,value){
+  const arr=getTasks(); const t=arr.find(x=>x.id===id); if(!t)return;
+  t.assignee=value;
+  saveTasks(arr);
+  renderTasks();
+  toast('Ανάθεση → '+value);
+}
+function pinTaskDemo(id){toast('Το task έγινε pinned στο Dashboard — demo.')}
+function openSnoozeMenu(e,id){
+  e.stopPropagation();
+  document.querySelectorAll('.snooze-menu').forEach(x=>x.remove());
+  const m=document.createElement('div'); m.className='snooze-menu open';
+  m.innerHTML=`<button onclick="snoozeTask('${id}','Αργότερα σήμερα')">Αργότερα σήμερα</button>
+    <button onclick="snoozeTask('${id}','Αύριο')">Αύριο</button>
+    <button onclick="snoozeTask('${id}','Σε 3 μέρες')">Σε 3 μέρες</button>
+    <button onclick="snoozeTask('${id}','Επόμενη εβδομάδα')">Επόμενη εβδομάδα</button>`;
+  document.body.appendChild(m);
+  const r=e.currentTarget.getBoundingClientRect();
+  m.style.left=Math.max(10,r.left-80)+'px';m.style.top=(r.bottom+6)+'px';
+}
+function snoozeTask(id,label){
+  const arr=getTasks(); const t=arr.find(x=>x.id===id); if(!t)return;
+  t.snoozedUntil=label; saveTasks(arr);
+  document.querySelectorAll('.snooze-menu').forEach(x=>x.remove());
+  renderTasks(); toast('Snoozed → '+label);
+}
+document.addEventListener('click',()=>document.querySelectorAll('.snooze-menu').forEach(x=>x.remove()));
+
+function toggleCompletedHistory(){
+  const el=document.getElementById('completedTasks');
+  el.style.display=el.style.display==='none'?'flex':'none';
+}
+let editingTaskId=null;
+function openTaskModal(){
+  editingTaskId=null;
+  document.querySelector('#taskModal h2').textContent='Νέο internal task';
+  document.getElementById('taskTitleInput').value='Παραγγελία toner';
+  document.getElementById('taskAssigneeInput').value='Γιώργος';
+  document.getElementById('taskDateInput').value='2026-08-17';
+  document.getElementById('taskRecurrenceInput').value='';
+  document.getElementById('taskLinkInput').value='';
+  document.getElementById('taskModal').classList.add('open');
+}
+function editTask(id){
+  const arr=getTasks();
+  const t=arr.find(x=>x.id===id);
+  if(!t)return;
+  editingTaskId=id;
+  document.querySelector('#taskModal h2').textContent='Επεξεργασία task';
+  document.getElementById('taskTitleInput').value=t.title||'';
+  document.getElementById('taskAssigneeInput').value=t.assignee||'Γιώργος';
+  document.getElementById('taskDateInput').value=t.date||'';
+  document.getElementById('taskRecurrenceInput').value=t.recurrence||'';
+  document.getElementById('taskLinkInput').value=t.link||'';
+  document.getElementById('taskModal').classList.add('open');
+}
+function closeTaskModal(){document.getElementById('taskModal').classList.remove('open')}
+function taskModalBackdrop(e){if(e.target.id==='taskModal')closeTaskModal()}
+function createTaskDemo(){
+  const title=document.getElementById('taskTitleInput').value.trim();
+  if(!title){toast('Χρειάζεται τίτλος.');return;}
+  const arr=getTasks();
+
+  if(editingTaskId){
+    const t=arr.find(x=>x.id===editingTaskId);
+    if(t){
+      t.title=title;
+      t.assignee=document.getElementById('taskAssigneeInput').value;
+      t.date=document.getElementById('taskDateInput').value;
+      t.recurrence=document.getElementById('taskRecurrenceInput').value;
+      t.link=document.getElementById('taskLinkInput').value;
+    }
+    saveTasks(arr);
+    closeTaskModal();
+    renderTasks();
+    toast('Το task ενημερώθηκε.');
+    editingTaskId=null;
+    return;
+  }
+
+  arr.unshift({
+    id:'T-'+Math.floor(300+Math.random()*600),
+    title,
+    assignee:document.getElementById('taskAssigneeInput').value,
+    date:document.getElementById('taskDateInput').value,
+    recurrence:document.getElementById('taskRecurrenceInput').value,
+    link:document.getElementById('taskLinkInput').value,
+    status:'active',
+    snoozedUntil:''
+  });
+  saveTasks(arr); closeTaskModal(); taskFilter='mine';
+  document.querySelectorAll('#taskFilters .pill').forEach(x=>x.classList.toggle('active',x.dataset.taskfilter==='mine'));
+  renderTasks(); toast('Το task δημιουργήθηκε.');
+}
+renderTasks();
+
+
+const inboxMessages={
+  m1:{
+    sender:"Mamma's Pizza",
+    channel:"Viber",
+    time:"Σήμερα · 09:18",
+    text:"Θέλω 1.000 ετικέτες ίδιες με την προηγούμενη φορά για τα sauce cups.",
+    intent:"Πιθανό repeat job",
+    confidence:"Υψηλή βεβαιότητα",
+    primary:"Νέα εργασία από προηγούμενη",
+    type:"newjob",
+    customer:"Mamma's Pizza",
+    match:"JOB-1734 — Ετικέτες sauce cups",
+    reply:"Βεβαίως. Θα προχωρήσω με τις ίδιες προδιαγραφές όπως την προηγούμενη φορά και ποσότητα 1.000 τεμάχια."
+  },
+  m2:{
+    sender:"Nikolas",
+    channel:"Viber",
+    time:"Σήμερα · 10:02",
+    text:"Θέλω προσφορά για 5.000 φυλλάδια A5 δίπτυχα, 4χρωμία και στις δύο όψεις.",
+    intent:"Αίτημα προσφοράς",
+    confidence:"Υψηλή βεβαιότητα",
+    primary:"Δημιουργία προσφοράς",
+    type:"quote",
+    customer:"Nikolas",
+    match:"",
+    reply:"Βεβαίως. Θα σου ετοιμάσω προσφορά για 5.000 φυλλάδια A5 δίπτυχα, 4/4."
+  },
+  m3:{
+    sender:"Coffee Island",
+    channel:"Email",
+    time:"Σήμερα · 10:45",
+    text:"Μπορείς να αλλάξεις το τηλέφωνο στο proof πριν προχωρήσουμε;",
+    intent:"Διόρθωση σε υπάρχουσα εργασία",
+    confidence:"Πιθανή σύνδεση",
+    primary:"Σύνδεση με υπάρχουσα εργασία",
+    type:"existing",
+    customer:"Coffee Island",
+    match:"JOB-1841 — Flyers προσφοράς",
+    reply:"Βεβαίως. Θα αλλάξω το τηλέφωνο και θα σου στείλω νέο proof για έγκριση."
+  },
+  m4:{
+    sender:"TechMart",
+    channel:"Email",
+    time:"Σήμερα · 11:20",
+    text:"Πότε υπολογίζεις να είναι έτοιμες οι κάρτες;",
+    intent:"Ερώτηση πελάτη",
+    confidence:"Υψηλή βεβαιότητα",
+    primary:"Απάντηση",
+    type:"question",
+    customer:"TechMart",
+    match:"JOB-1838",
+    reply:"Υπολογίζω να είναι έτοιμες αύριο το μεσημέρι. Θα σε ενημερώσω μόλις ολοκληρωθούν."
+  }
+};
+let activeInboxMsg='m1';
+
+function inboxChannelBadge(ch){
+  return ch==='Viber'?'b-purple':'b-blue';
+}
+function openInboxMessage(id,el){
+  activeInboxMsg=id;
+  document.querySelectorAll('.inbox-item').forEach(x=>x.classList.toggle('active',x===el));
+  renderInboxDetail();
+}
+function renderInboxDetail(){
+  const m=inboxMessages[activeInboxMsg];
+  const root=document.getElementById('inboxDetailContent');
+  if(!root||!m)return;
+
+  let matching='';
+  if(m.match){
+    matching=`<div class="match-card selected">
+      <div class="minor">Πιθανή σχετική εγγραφή</div>
+      <b class="link" onclick="${m.type==='existing'?'go(\\'fulljob\\')':'go(\\'fulljob\\')'}">${m.match}</b>
+      <div class="minor" style="margin-top:4px">${m.type==='existing'?'Το AI προτείνει σύνδεση με αυτή την εργασία.':'Παρόμοια προηγούμενη εργασία του ίδιου πελάτη.'}</div>
+    </div>`;
+  }
+
+  root.innerHTML=`
+    <div class="statusline">
+      <div>
+        <h2 style="margin:0 0 4px">${m.sender}</h2>
+        <div class="minor">${m.time}</div>
+      </div>
+      <span class="badge ${inboxChannelBadge(m.channel)}">${m.channel}</span>
+    </div>
+
+    <div class="inbox-message">${m.text}</div>
+
+    <div class="ai-intent">
+      <div class="statusline">
+        <div>
+          <div class="minor">AI INTENT</div>
+          <h3 style="margin:5px 0">${m.intent}</h3>
+        </div>
+        <span class="badge ${m.confidence.includes('Υψηλή')?'b-green':'b-orange'}">${m.confidence}</span>
+      </div>
+      ${matching}
+    </div>
+
+    <div class="inbox-actions">
+      ${primaryInboxButton(m)}
+      <button class="outline" onclick="showInboxReply()">Απάντηση</button>
+      <button class="ghost" onclick="snoozeInboxMessage()">Αναβολή</button>
+      <button class="ghost" onclick="ignoreInboxMessage()">Αγνόηση</button>
+    </div>
+
+    <div id="inboxReplyBox" class="reply-box" style="display:none">
+      <div class="statusline">
+        <h3 style="margin:0">ΠΡΟΤΕΙΝΟΜΕΝΗ ΑΠΑΝΤΗΣΗ</h3>
+        <span class="badge b-gray">${m.channel} style</span>
+      </div>
+      <textarea id="inboxReplyDraft">${m.reply}</textarea>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px">
+        <button class="ghost" onclick="toast('Δημιουργήθηκε νέο draft — demo')">↻ Νέο draft</button>
+        <button class="primary" onclick="sendInboxReply()">Αποστολή</button>
+      </div>
+    </div>`;
+}
+function primaryInboxButton(m){
+  if(m.type==='newjob') return `<button class="primary primary-action" onclick="inboxCreateJob()">Νέα εργασία από προηγούμενη</button>`;
+  if(m.type==='quote') return `<button class="primary primary-action" onclick="inboxCreateQuote()">Δημιουργία προσφοράς</button>`;
+  if(m.type==='existing') return `<button class="primary primary-action" onclick="inboxLinkExisting()">Σύνδεση με εργασία</button>`;
+  return `<button class="primary primary-action" onclick="showInboxReply()">Απάντηση</button>`;
+}
+function showInboxReply(){
+  const el=document.getElementById('inboxReplyBox');
+  if(el)el.style.display='block';
+}
+function sendInboxReply(){
+  const v=document.getElementById('inboxReplyDraft')?.value?.trim();
+  if(!v){toast('Το μήνυμα είναι κενό.');return;}
+  toast('Η απάντηση στάλθηκε — demo.');
+  resolveInboxMessage('Απαντήθηκε');
+}
+function inboxCreateJob(){
+  const m=inboxMessages[activeInboxMsg];
+  fillScratchExample();
+  document.getElementById('scratchPrompt').value=`1.000 ετικέτες για ${m.customer}, ίδιες με την προηγούμενη φορά για τα sauce cups.`;
+  go('newjob');
+  toast('Το αίτημα μεταφέρθηκε στη ροή Νέα εργασία.');
+}
+function inboxCreateQuote(){
+  go('quotes');
+  setTimeout(()=>openQuoteEditor(),100);
+  toast('Δημιουργία προσφοράς από το αίτημα.');
+}
+function inboxLinkExisting(){
+  toast('Το μήνυμα συνδέθηκε με JOB-1841 — demo.');
+  resolveInboxMessage('Συνδέθηκε');
+}
+function snoozeInboxMessage(){
+  const item=document.querySelector(`.inbox-item[data-msg="${activeInboxMsg}"]`);
+  if(item){
+    item.style.opacity='.55';
+    item.querySelector('.minor').textContent='Αναβολή μέχρι αύριο';
+  }
+  toast('Το αίτημα αναβλήθηκε μέχρι αύριο.');
+}
+function ignoreInboxMessage(){
+  resolveInboxMessage('Αγνοήθηκε');
+  toast('Το αίτημα αγνοήθηκε.');
+}
+function resolveInboxMessage(label){
+  const item=document.querySelector(`.inbox-item[data-msg="${activeInboxMsg}"]`);
+  if(item){
+    item.querySelector('.minor').textContent=label;
+    item.style.opacity='.55';
+  }
+}
+let inboxFilter='all';
+document.querySelectorAll('#inboxFilters .pill').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    inboxFilter=btn.dataset.inboxfilter;
+    document.querySelectorAll('#inboxFilters .pill').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.inbox-item').forEach(item=>{
+      item.style.display=(inboxFilter==='all'||item.dataset.type===inboxFilter)?'':'none';
+    });
+  });
+});
+renderInboxDetail();
+
+</script>
+</body>
+</html>
