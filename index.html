@@ -2013,7 +2013,7 @@ function renderInboxDetail(){
   if(m.match){
     matching=`<div class="match-card selected">
       <div class="minor">Πιθανή σχετική εγγραφή</div>
-      <b class="link" onclick="${m.type==='existing'?'go(\\'fulljob\\')':'go(\\'fulljob\\')'}">${m.match}</b>
+      <b class="link" onclick="go('fulljob')">${m.match}</b>
       <div class="minor" style="margin-top:4px">${m.type==='existing'?'Το AI προτείνει σύνδεση με αυτή την εργασία.':'Παρόμοια προηγούμενη εργασία του ίδιου πελάτη.'}</div>
     </div>`;
   }
